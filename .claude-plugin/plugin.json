@@ -1,0 +1,13 @@
+{
+  "name": "datatailr-skills",
+  "version": "0.1.0-dev.1",
+  "description": "Build, deploy, and manage workloads in an existing Datatailr environment.",
+  "author": {
+    "name": "Datatailr",
+    "url": "https://www.datatailr.com/"
+  },
+  "homepage": "https://www.datatailr.com/",
+  "repository": "https://github.com/Datatailr/datatailr-skills",
+  "license": "MIT",
+  "keywords": ["datatailr", "data", "workflows", "deployment"]
+}
