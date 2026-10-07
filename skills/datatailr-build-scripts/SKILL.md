@@ -1,9 +1,6 @@
 ---
 name: datatailr-build-scripts
 description: Customize the Docker image for a Datatailr job using build_script_pre and build_script_post. Covers installing OS packages (apt-get), compilers, system libraries, Cython / native extension compilation, and build script formatting. Use when the user's job needs system-level dependencies, native code compilation, or any image customization beyond pip packages.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Customizing the container image with build scripts

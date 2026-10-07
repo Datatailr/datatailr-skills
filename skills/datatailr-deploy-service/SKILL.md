@@ -1,20 +1,17 @@
 ---
 name: datatailr-deploy-service
 description: Deploy a long-running service on the Datatailr platform using the Python SDK. Services are background processes like API servers, message consumers, or workers that auto-restart on exit. Use when the user asks to deploy a service, API, or background worker on Datatailr, or to make existing service code run on Datatailr / dt.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Deploy a Service on Datatailr
 
 ## Overview
 
-A Datatailr service is a long-running background process (API server, message consumer, worker). It auto-restarts if it exits. The `datatailr` Python SDK handles packaging, image building, and scheduling. Use the Datatailr SDK installed in the agent's active Python environment. Check its version with `datatailr version` and use the release approved for the target Datatailr environment; do not assume the SDK is present or upgrade it implicitly.
+A Datatailr service is a long-running background process (API server, message consumer, worker). It auto-restarts if it exits. The `datatailr` Python SDK handles packaging, image building, and scheduling. The SDK is already installed in the workspace -- do not look for it.
 
 ## Project layout
 
-See [datatailr-project-layout.md](references/datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
+See [datatailr-project-layout.md](../datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
 
 ## Service code
 
@@ -63,7 +60,7 @@ service = Service(
     name="My Service",
     entrypoint=main,
     resources=Resources(memory="2g", cpu=1),
-    python_requirements=["fastapi", "uvicorn"],
+    python_requirements=["flask"],
 )
 service.run()
 ```
@@ -71,13 +68,13 @@ service.run()
 Key parameters:
 - `name`: human-readable name on the platform.
 - `entrypoint`: the `main` function (imported callable, not a string).
-- `resources`: CPU and memory for the container. Defaults to 128MB / 0.25 CPU.
-- `python_requirements`: a list of pip package names (e.g. `["fastapi", "uvicorn"]`) or a path to a `requirements.txt` file. The path is resolved **locally** when the job definition is built (at deploy time); the file is read on the machine running the deploy script and its **contents** are sent to the remote. If using a path, the file must exist where you run `python deploy.py` (e.g. `my_service/requirements.txt` when running from project root).
+- `resources`: CPU, memory, and optional GPU memory for the container. Defaults to 128MB / 0.25 CPU. Set GPU memory with `Resources(..., vram="2g")`. `vram` uses the same size strings as memory. If you omit `vram`, the job JSON omits the `vram` field. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run.
+- `python_requirements`: a list of pip package names (e.g. `["flask"]`) or a path to a `requirements.txt` file. The path is resolved **locally** when the job definition is built (at deploy time); the file is read on the machine running the deploy script and its **contents** are sent to the remote. If using a path, the file must exist where you run `python deploy.py` (e.g. `my_service/requirements.txt` when running from project root).
 - `service.run()` saves the definition AND starts it. Use `service.save()` to only save.
 - `python_version`: Python version for the container image (default `"auto"` -- auto-detects from your environment).
 - `build_script_pre` / `build_script_post`: shell commands for the Docker image build. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md) for formatting. If the script must operate on the installed package, it is at `/opt/datatailr/usr/lib/python/site-packages/<package_name>` where `<package_name>` is the name of the directory that is deployed (e.g. `my_service`).
 - `env_vars`: dict of environment variables passed to the running container.
-- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](references/datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
+- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](../datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
 
 ## Build environment and native dependencies
 
@@ -94,7 +91,7 @@ When you (the agent) run the deploy script yourself, you may get `RuntimeError: 
 
 Once deployed, the service is reachable from any other Datatailr job (app, workflow, add-in, or another service) at `http://<normalized-name>`. The name is derived from the `name` parameter: lowercased, non-alphanumeric characters replaced with hyphens (e.g., `"My Service"` becomes `http://my-service`).
 
-For full details on constructing URLs, authentication patterns, and naming conventions, see [datatailr-service-communication.md](references/datatailr-service-communication.md).
+For full details on constructing URLs, authentication patterns, and naming conventions, see [datatailr-service-communication.md](../datatailr-service-communication.md).
 
 ## Checklist
 
@@ -116,7 +113,3 @@ The platform sets these environment variables in every running service container
 - `DATATAILR_JOB_TYPE`: always `service` for services.
 - `DATATAILR_JOB_ENVIRONMENT`: Datatailr compute environment (`dev`, `pre`, or `prod`).
 - `DATATAILR_DOMAIN`: platform domain (useful for constructing URLs).
-
-## Related skills
-
-Sibling skill links assume the full Datatailr collection is installed. If a referenced skill is missing, install it from the same release before following the dependent workflow.

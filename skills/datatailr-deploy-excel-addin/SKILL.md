@@ -1,20 +1,17 @@
 ---
 name: datatailr-deploy-excel-addin
 description: Deploy an Excel add-in on the Datatailr platform using the Python SDK. Excel add-ins expose Python functions as Excel worksheet functions. Use when the user asks to deploy an Excel add-in, expose Python functions to Excel, or create Excel UDFs on Datatailr / dt.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Deploy an Excel Add-in on Datatailr
 
 ## Overview
 
-A Datatailr Excel add-in exposes Python functions as Excel worksheet functions (UDFs). Users call server-side computations directly from Excel spreadsheets. Functions can return single values or stream live data. The `datatailr` Python SDK handles packaging, image building, and scheduling. Use the Datatailr SDK installed in the agent's active Python environment. Check its version with `datatailr version` and use the release approved for the target Datatailr environment; do not assume the SDK is present or upgrade it implicitly.
+A Datatailr Excel add-in exposes Python functions as Excel worksheet functions (UDFs). Users call server-side computations directly from Excel spreadsheets. Functions can return single values or stream live data. The `datatailr` Python SDK handles packaging, image building, and scheduling. The SDK is already installed in the workspace -- do not look for it.
 
 ## Project layout
 
-See [datatailr-project-layout.md](references/datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
+See [datatailr-project-layout.md](../datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
 
 ## Add-in code
 
@@ -130,13 +127,13 @@ addin.save()
 Key parameters:
 - `name`: human-readable name on the platform.
 - `entrypoint`: the `main` function (imported callable, not a string).
-- `resources`: CPU and memory. Excel add-ins often need more memory (e.g., `"4g"`).
+- `resources`: CPU, memory, and optional GPU memory. Excel add-ins often need more memory (e.g., `"4g"`). Set GPU memory with `Resources(..., vram="2g")`. `vram` uses the same size strings as memory. If you omit `vram`, the job JSON omits the `vram` field. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run.
 - `python_requirements`: a list of pip package names (e.g. `["numpy", "pandas"]`) or a path to a `requirements.txt` file. The path is resolved **locally** when the job definition is built (at deploy time); the file is read on the machine running the deploy script and its **contents** are sent to the remote. If using a path, the file must exist where you run `python deploy.py` (e.g. `my_addin/requirements.txt` when running from project root).
 - Use `addin.save()` to deploy the add-in. To start an instance of the addin a user should access it from the UI.
 - `python_version`: Python version for the container image (default `"auto"` -- auto-detects from your environment).
 - `build_script_pre` / `build_script_post`: shell commands for the Docker image build. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md) for formatting. If the script must operate on the installed package, it is at `/opt/datatailr/usr/lib/python/site-packages/<package_name>` where `<package_name>` is the name of the directory that is deployed (e.g. `my_addin`).
 - `env_vars`: dict of environment variables passed to the running container.
-- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](references/datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
+- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](../datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
 
 ## Build environment and native dependencies
 
@@ -173,8 +170,4 @@ The platform sets these environment variables in every running add-in container:
 
 ## Calling other services
 
-If the add-in functions need to fetch data from a Datatailr service, see [datatailr-service-communication.md](references/datatailr-service-communication.md) for how to construct the internal URL and authenticate.
-
-## Related skills
-
-Sibling skill links assume the full Datatailr collection is installed. If a referenced skill is missing, install it from the same release before following the dependent workflow.
+If the add-in functions need to fetch data from a Datatailr service, see [datatailr-service-communication.md](../datatailr-service-communication.md) for how to construct the internal URL and authenticate.

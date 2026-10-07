@@ -31,7 +31,7 @@ Filters use the same DSL as other `dt` commands. Wrap the whole expression in qu
 | `memory` | numeric | bytes |
 | `jobs` | numeric | running job count |
 
-See [datatailr-sorting-and-filtering-dsl.md](datatailr-sorting-and-filtering-dsl.md) for the full filter grammar.
+See [datatailr-sorting-and-filtering-dsl.md](../datatailr-sorting-and-filtering-dsl.md) for the full filter grammar.
 
 ## Inspect running jobs on a node
 
@@ -77,7 +77,7 @@ Fields:
 | Field | Description |
 |---|---|
 | `type` | Cloud instance type (use `dt node instance-types` to list options) |
-| `node_class` | Node class, typically `compute` |
+| `node_class` | Node class: `compute` or `gpu`. The autoscaler does not start GPU nodes. A user must start a GPU node manually |
 | `environment` | `dev`, `pre`, or `prod` |
 | `num_instances` | Number of instances to provision |
 

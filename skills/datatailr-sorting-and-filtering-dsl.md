@@ -39,6 +39,17 @@ Arrays work with `=` (generates `= ANY($N)`) and text operators like `starts_wit
 
 **Important:** values are space-separated; for arrays, each element must end with `,` (except the last, which ends with `]`): `val1,` `val2,` `val3]`.
 
+#### Quoted values
+
+Wrap a value in double quotes when it contains spaces or any of `( ) [ ] ,`:
+
+```
+display_name contains "Daily Report"
+display_name = ["Daily Report", "Weekly (EU)"]
+```
+
+Inside quotes, `\"` is a literal quote and `\\` a literal backslash; any other backslash is kept as is. A quoted value is always a value, so `"and"` or `"]"` is not read as a keyword or bracket. Closing `)`, `,` and `]` attach right after the closing quote.
+
 #### Parentheses
 
 Group conditions with parentheses for complex logic:

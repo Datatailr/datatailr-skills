@@ -1,9 +1,6 @@
 ---
 name: datatailr-users-and-groups
 description: Manage users and groups on the Datatailr platform. Create, list, inspect, and remove users and groups. Add or remove users from groups. Use when the user asks to manage platform users, create accounts, set up teams or groups, check who has access, or manage membership on Datatailr / dt.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Users & Groups on Datatailr
@@ -174,4 +171,4 @@ acl = ACL({
 })
 ```
 
-See [datatailr-acl.md](references/datatailr-acl.md) for full ACL documentation.
+See [datatailr-acl.md](../datatailr-acl.md) for full ACL documentation.

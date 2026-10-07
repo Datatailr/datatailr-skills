@@ -60,7 +60,7 @@ data = wf.result(run_id=run_id, task_id=details["tasks"][0]["id"])
 
 Both `logs()` and `result()` raise `ValueError` if `task_name` is given and does not match any task on the currently-loaded workflow. They also work on non-workflow jobs (`App`, `Service`, `ExcelAddin`); in that case `task_name`/`task_id` is informational and the call addresses the job itself.
 
-For CLI-based equivalents (`dt log read`, `dt job runs`, etc.) and broader troubleshooting, see [datatailr-job-observability](../SKILL.md).
+For CLI-based equivalents (`dt log read`, `dt job runs`, etc.) and broader troubleshooting, see [datatailr-job-observability](../datatailr-job-observability/SKILL.md).
 
 ## Instant-run handle (script + notebooks)
 

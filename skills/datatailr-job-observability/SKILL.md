@@ -1,16 +1,13 @@
 ---
 name: datatailr-job-observability
 description: Monitor and troubleshoot Datatailr jobs using the CLI. Check job statuses, read logs, list runs, inspect versions, and manage running jobs. Use when the user asks about job status, wants to see logs, check if something is running, debug a failed job, or manage jobs on Datatailr / dt.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Job Observability on Datatailr
 
 All observability commands use the `dt` CLI. Always add `--json` when you need to parse the output programmatically. Human-readable (table) output is the default.
 
-For programmatic access from Python (fetching workflow runs, per-task logs, and cached task results via the SDK), see [fetch-logs-and-results.md](references/fetch-logs-and-results.md).
+For programmatic access from Python (fetching workflow runs, per-task logs, and cached task results via the SDK), see [fetch-logs-and-results.md](fetch-logs-and-results.md).
 
 ## Safety: confirm before mutating
 

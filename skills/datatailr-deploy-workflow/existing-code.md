@@ -44,6 +44,8 @@ def build_report(data: dict) -> str:
     ...
 ```
 
+`@task()` also accepts `vram` for GPU memory, using the same size strings as `memory` (for example `@task(vram="2g")`). If you omit `vram`, the task JSON omits the `vram` field. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run.
+
 No other changes to the function body are needed. The functions still work as normal Python when called directly.
 
 ## 3. Create the workflow function

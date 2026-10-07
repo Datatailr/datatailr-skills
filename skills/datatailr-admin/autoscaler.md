@@ -136,6 +136,7 @@ dt settings get autoscaler --json
 
 ## How autoscaler interacts with nodes
 
+- The autoscaler does not start GPU nodes. A user must start a GPU node manually with `dt node new` and `"node_class": "gpu"` before a job that sets `vram` can run
 - The autoscaler reads `settings/autoscaler` on each scale decision
 - When total CPUs in an environment reach `max_cpus`, no new nodes are provisioned
 - Nodes with `--auto-terminate` use `minimum_idle_time` and `minimum_uptime` from this setting. Self-terminate retries start after a random delay and then double that delay so concurrent idle waves do not stampede the cloud API

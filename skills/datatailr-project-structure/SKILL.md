@@ -1,9 +1,10 @@
 ---
 name: datatailr-project-structure
-description: Structure Python projects for Datatailr so shared code is importable and every job deploys without copying packages. Use when creating or restructuring a Datatailr project, adding a workflow/service/app/Excel add-in that shares code, fixing ImportError on deploy, or replacing sync/copy scripts for common modules.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
+description: >-
+  Structure Python projects for Datatailr so shared code is importable and every
+  job deploys without copying packages. Use when creating or restructuring a
+  Datatailr project, adding a workflow/service/app/Excel add-in that shares code,
+  fixing ImportError on deploy, or replacing sync/copy scripts for common modules.
 ---
 
 # Datatailr project structure
@@ -186,10 +187,6 @@ When creating or restructuring a Datatailr project:
 
 ## Related skills
 
-- Component overview: [datatailr](../datatailr/SKILL.md)
-- Workflow / service / app / Excel: [workflow](../datatailr-deploy-workflow/SKILL.md), [service](../datatailr-deploy-service/SKILL.md), [app](../datatailr-deploy-app/SKILL.md), and [Excel add-in](../datatailr-deploy-excel-addin/SKILL.md) skills
-- Native deps / Cython: [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md)
-
-## Related skills
-
-Sibling skill links assume the full Datatailr collection is installed. If a referenced skill is missing, install it from the same release before following the dependent workflow.
+- Component overview: `.agents/skills/datatailr/SKILL.md`
+- Workflow / service / app / Excel: `.agents/skills/datatailr-deploy-*/SKILL.md`
+- Native deps / Cython: `.agents/skills/datatailr-build-scripts/SKILL.md`

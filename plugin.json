@@ -16,7 +16,7 @@
       "interface": {
         "displayName": "Datatailr Skills",
         "shortDescription": "Build and deploy with Datatailr",
-        "longDescription": "Skills for Datatailr workflows, services, web apps, Excel add-ins, storage, administration, observability, and managed connectors. Requires an existing Datatailr environment and the appropriate SDK, CLI, and permissions.",
+        "longDescription": "Skills for Datatailr workflows, services, web apps, Excel add-ins, storage, administration, and observability. Requires an existing Datatailr environment and the appropriate SDK, CLI, and permissions.",
         "developerName": "Datatailr",
         "category": "Developer Tools",
         "websiteURL": "https://www.datatailr.com/",

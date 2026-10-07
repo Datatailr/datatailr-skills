@@ -1,20 +1,17 @@
 ---
 name: datatailr-deploy-workflow
 description: Deploy a DAG workflow on the Datatailr platform using the Python SDK. Workflows are directed acyclic graphs of tasks that run in parallel when possible. Use when the user asks to deploy a workflow, data pipeline, batch job, or DAG on Datatailr / dt, or to make existing Python functions deployable as a workflow.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Deploy a Workflow on Datatailr
 
 ## Overview
 
-A Datatailr workflow is a DAG (directed acyclic graph) of tasks. Tasks are Python functions decorated with `@task()`. A workflow function decorated with `@workflow()` composes tasks -- dependencies are inferred automatically from the data flow between calls. Tasks with no dependencies run in parallel. The `datatailr` Python SDK handles packaging, image building, and scheduling. Use the Datatailr SDK installed in the agent's active Python environment. Check its version with `datatailr version` and use the release approved for the target Datatailr environment; do not assume the SDK is present or upgrade it implicitly.
+A Datatailr workflow is a DAG (directed acyclic graph) of tasks. Tasks are Python functions decorated with `@task()`. A workflow function decorated with `@workflow()` composes tasks -- dependencies are inferred automatically from the data flow between calls. Tasks with no dependencies run in parallel. The `datatailr` Python SDK handles packaging, image building, and scheduling. The SDK is already installed in the workspace -- do not look for it.
 
 ## Project layout
 
-See [datatailr-project-layout.md](references/datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
+See [datatailr-project-layout.md](../datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
 
 ## Task functions
 
@@ -38,7 +35,7 @@ def heavy_computation(x, y):
     return x ** y
 ```
 
-`@task()` accepts optional `memory` and `cpu` to override the workflow defaults for that task.
+`@task()` accepts optional `memory`, `cpu`, and `vram` to override the workflow defaults for that task. `vram` is GPU memory and uses the same size strings as `memory` (for example `"2g"`). If you omit `vram` on both the task and the workflow, the task JSON omits the `vram` field. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run.
 
 ## Workflow function
 
@@ -74,11 +71,11 @@ Key rules:
 
 - `name`: display name on the platform. Defaults to the function name, title-cased.
 - `python_requirements`: a list of pip package names (e.g. `["requests"]`) or a path to a `requirements.txt` file. The path is resolved **locally** when the job definition is built (at deploy time); the file is read on the machine running the deploy script and its **contents** are sent to the remote. If using a path, the file must exist where you run `python deploy.py`.
-- `resources`: default `Resources(memory=..., cpu=...)` for all tasks. Individual `@task()` overrides take precedence.
+- `resources`: default `Resources(memory=..., cpu=..., vram=...)` for all tasks. Individual `@task()` overrides take precedence. `vram` is optional GPU memory, with the same size strings as `memory`. If you omit `vram`, the task JSON omits the `vram` field. A task that omits `vram` keeps the workflow value. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run.
 - `schedule`: a `Schedule` for recurring execution (see below).
 - `env_vars`: dict of environment variables passed to every task container.
 - `python_version`: Python version for containers (default `"auto"`).
-- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](references/datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
+- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](../datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
 - `fail_after`: max duration before marked failed (e.g., `"2h"` or `timedelta(hours=2)`).
 - `expire_after`: duration after which completed workflow resources are cleaned up.
 - `build_script_pre` / `build_script_post`: shell commands for the Docker image build. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md) for formatting. If the script must operate on the installed package, it is at `/opt/datatailr/usr/lib/python/site-packages/<package_name>` where `<package_name>` is the name of the directory that is deployed.
@@ -128,18 +125,18 @@ my_workflow(to_json=True)     # return JSON representation without deploying
 
 ### Instant Runs
 It is possible to trigger a workflow run without waiting for an image to be built - this is great for 'one-off' runs.
-See [instant-run.md](references/instant-run.md) for more details.
+See [instant-run.md](instant-run.md) for more details.
 
 ## Making existing code deployable
 
-If the user has existing Python functions and wants to turn them into a Datatailr workflow, see [existing-code.md](references/existing-code.md).
+If the user has existing Python functions and wants to turn them into a Datatailr workflow, see [existing-code.md](existing-code.md).
 
 ## Using KV and Secrets in tasks
 
 Each task runs in its own container. If a task reads from KV or Secrets:
 
 - `KV().get()` **raises** if the key does not exist. Ensure keys are created before the workflow runs (ask the user to create it in the UI if required). Alternatively, wrap in try/except with a default.
-- `KV().get()` may return a string or an already-parsed object. Always handle both (see the [kv-and-secrets skill](../datatailr-kv-and-secrets/SKILL.md) for the pattern).
+- `KV().get()` may return a string or an already-parsed object. Always handle both (see the [kv-and-secrets skill](../kv-and-secrets/SKILL.md) for the pattern).
 
 ## Checklist
 
@@ -162,7 +159,3 @@ The platform sets these environment variables in every running task container. U
 - `DATATAILR_JOB_ENVIRONMENT`: Datatailr compute environment (`dev`, `pre`, or `prod`).
 - `DATATAILR_BATCH_RUN_ID`: unique ID for this workflow run.
 - `DATATAILR_DOMAIN`: platform domain.
-
-## Related skills
-
-Sibling skill links assume the full Datatailr collection is installed. If a referenced skill is missing, install it from the same release before following the dependent workflow.

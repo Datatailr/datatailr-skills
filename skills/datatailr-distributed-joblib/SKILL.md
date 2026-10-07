@@ -1,9 +1,6 @@
 ---
 name: datatailr-distributed-joblib
 description: Run distributed scikit-learn / joblib workloads on the Datatailr platform. Parallelizes joblib.Parallel work (grid search, cross-validation, random forests) across a pool of worker containers with no manual setup. Use when the user asks to distribute, scale out, or speed up scikit-learn or joblib code on Datatailr / dt.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Distributed scikit-learn / joblib on Datatailr

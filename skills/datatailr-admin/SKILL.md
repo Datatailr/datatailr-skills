@@ -1,9 +1,6 @@
 ---
 name: datatailr-admin
 description: Manage Datatailr cluster administration via CLI and Python SDK. Inspect and modify compute nodes (`dt node`), platform settings (`dt settings`) including autoscaler capacity, idle time, drain/terminate, login, and ACLs, and cost/budgets (`Cost`, `Budget` / `dt cost`). Use when the user asks about admin settings, autoscaler, cluster capacity, nodes/instances, idle time, drain, terminate, platform settings, spend, cost view, or budgets on Datatailr / dt.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Admin & Cluster Settings on Datatailr
@@ -42,7 +39,7 @@ Refuse `dt settings put autoscaler` when the change would:
 - Set `minimum_idle_time`, `minimum_uptime`, or `zombie_timeout` above **15m** for any environment
 - Enable `fallback_to_other_families: true` without the user explicitly requesting it
 
-See [autoscaler.md](references/autoscaler.md) for the full schema, defaults, and safe-change workflow.
+See [autoscaler.md](autoscaler.md) for the full schema, defaults, and safe-change workflow.
 
 ### Login and ACL settings
 
@@ -64,15 +61,15 @@ Never "fix permissions" by rewriting ACL or login settings. Diagnose with `dt se
 
 ## Autoscaler write workflow
 
-Full autoscaler reference: [autoscaler.md](references/autoscaler.md)
+Full autoscaler reference: [autoscaler.md](autoscaler.md)
 
 ## Node operations
 
-Full node command reference: [nodes.md](references/nodes.md)
+Full node command reference: [nodes.md](nodes.md)
 
 ## Cost & budgets
 
-Full Cost / Budget SDK reference: [cost-and-budget.md](references/cost-and-budget.md)
+Full Cost / Budget SDK reference: [cost-and-budget.md](cost-and-budget.md)
 
 ## Other settings keys (confirm tier)
 
@@ -85,7 +82,7 @@ These keys exist under `settings/` in the KV store. Use read commands freely; re
 | `image-retention` | Registry image cleanup policies per environment | `dt settings get image-retention` |
 | `helpdesk` | HubSpot integration credentials | `dt settings get helpdesk` |
 
-For login, ACL, and autoscaler details, use the hard-gate rules above. Inspect the schemas exposed by the target platform with `dt settings get-schema`.
+For login, ACL, and autoscaler details, use the hard-gate rules above. User-facing documentation: `documentation/docs/admin/settings/index.md`.
 
 ## Permissions
 
@@ -103,7 +100,3 @@ When a user reports capacity or scheduling issues:
 3. **Check drain state**: `dt node drain-status -N <node>` if a specific node is not accepting jobs
 4. **Check pending jobs**: `dt job runs -f "state = pending" --json`
 5. **Diagnose, don't mutate** — explain what you found and what change would help; apply hard-gate rules before any write
-
-## Related skills
-
-Sibling skill links assume the full Datatailr collection is installed. If a referenced skill is missing, install it from the same release before following the dependent workflow.

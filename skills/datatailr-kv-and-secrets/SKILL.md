@@ -1,9 +1,6 @@
 ---
 name: datatailr-kv-and-secrets
 description: Use Datatailr's user key-value store and secrets manager. KV stores user-owned configuration data. Secrets stores encrypted sensitive values like passwords, API keys, and tokens. Use when the user asks to store or retrieve user config, secrets, API keys, passwords, or values on Datatailr / dt. For platform admin settings (autoscaler, login, ACLs), use datatailr-admin instead.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Key-Value Store & Secrets on Datatailr
@@ -24,7 +21,7 @@ For example: "This workflow needs an access token called `datastream_api_key`. P
 
 ## Python SDK -- KV
 
-Use the Datatailr SDK installed in the agent's active Python environment. Check its version with `datatailr version` and use the release approved for the target Datatailr environment; do not assume the SDK is present or upgrade it implicitly. Jobs read KV values at runtime but should not create or modify them programmatically.
+The SDK is already installed in the workspace -- do not look for it. Jobs read KV values at runtime but should not create or modify them programmatically.
 
 ```python
 from datatailr import KV
@@ -121,7 +118,3 @@ db_host = kv.get("db_host")
 db_password = secrets.get("db_password")
 connection_string = f"postgresql://app:{db_password}@{db_host}:5432/mydb"
 ```
-
-## Related skills
-
-Sibling skill links assume the full Datatailr collection is installed. If a referenced skill is missing, install it from the same release before following the dependent workflow.

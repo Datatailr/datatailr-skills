@@ -1,9 +1,6 @@
 ---
 name: datatailr-blob-storage
 description: Use Datatailr blob storage to persist and retrieve files and data. Blob storage is a key-value store for arbitrary binary data accessible from any job. Use when the user asks to store data, save files, share data between jobs, read/write blobs, or use persistent storage on Datatailr / dt.
-metadata:
-  version: 0.1.0-dev.1
-  compatibility-status: unverified
 ---
 
 # Blob Storage on Datatailr
@@ -12,7 +9,7 @@ Datatailr blob storage is a persistent key-value store for arbitrary files and b
 
 ## Python SDK
 
-Use the Datatailr SDK installed in the agent's active Python environment. Check its version with `datatailr version` and use the release approved for the target Datatailr environment; do not assume the SDK is present or upgrade it implicitly.
+The SDK is already installed in the workspace -- do not look for it.
 
 ```python
 from datatailr import Blob
@@ -76,7 +73,7 @@ current_acl = blob.acls("my_bucket/shared.csv")
 blob.set_acls("my_bucket/shared.csv", new_acl)
 ```
 
-Only set ACLs if the user explicitly requests access restrictions. See [datatailr-acl.md](references/datatailr-acl.md) for details on the `ACL` class.
+Only set ACLs if the user explicitly requests access restrictions. See [datatailr-acl.md](../datatailr-acl.md) for details on the `ACL` class.
 
 ## CLI
 
