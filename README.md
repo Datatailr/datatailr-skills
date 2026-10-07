@@ -12,7 +12,7 @@ overwritten by the next sync.
 
 The daily sync workflow is maintained in Sonic at
 `.github/workflows/sync-agent-skills.yml`. Once merged into Sonic's `main`, it
-runs daily at 02:17 UTC (07:47 IST), with a manual run option. It copies Sonic's
+runs daily at 00:00 CET (23:00 UTC; fixed UTC+1), with a manual run option. It copies Sonic's
 latest `main`, removes obsolete files inside `skills/`, verifies an exact match,
 and commits only when the skill content changes. Repository metadata outside
 `skills/` is preserved.
