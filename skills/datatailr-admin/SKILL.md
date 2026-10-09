@@ -79,7 +79,7 @@ These keys exist under `settings/` in the KV store. Use read commands freely; re
 |---|---|---|
 | `system` | System log retention (`system_logs_retention_period`, default `7d`) | `dt settings get system` |
 | `workstation` | Default workstation and idle timeout (`idle_timeout`, default `5h`) | `dt settings get workstation` |
-| `image-retention` | Registry image cleanup policies per environment | `dt settings get image-retention` |
+| `image-retention` | Registry image cleanup policies per environment. `by_count` 1 deletes every older image, so users cannot roll back with `dt job rm` (see [datatailr-job-rollback](../datatailr-job-rollback/SKILL.md)) | `dt settings get image-retention` |
 | `helpdesk` | HubSpot integration credentials | `dt settings get helpdesk` |
 
 For login, ACL, and autoscaler details, use the hard-gate rules above. User-facing documentation: `documentation/docs/admin/settings/index.md`.

@@ -156,8 +156,10 @@ dt job promote my_job 5 dev            # promote version 5 from dev to next env
 ```bash
 dt job rm my_job                       # remove job (soft delete)
 dt job rm my_job -v 3                  # remove specific version
-dt job restore my_job                  # restore a removed job
+dt job restore my_job                  # undo dt job rm (undelete)
 ```
+
+To roll back to a previous version, see [datatailr-job-rollback](../datatailr-job-rollback/SKILL.md).
 
 ## Troubleshooting workflow
 

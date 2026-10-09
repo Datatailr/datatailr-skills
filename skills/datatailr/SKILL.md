@@ -45,7 +45,7 @@ log.critical("This is a critical message")
 ```
 
 These logs will be visible in the Datatailr UI under the "stdout" and "stderr" tabs of the job's logs, as well as using the `Job.logs()` method and `dt log read` CLI command.
-More about observability and logging can be found in [datatailr-job-observability](../datatailr-job-observability/SKILL.md).
+More about observability and logging can be found in [datatailr-job-observability](../datatailr-job-observability/SKILL.md). To roll a job back to a previous version, see [datatailr-job-rollback](../datatailr-job-rollback/SKILL.md).
 
 ## `dt` CLI and wrapper
 All interactions with the platform are done via the `dt` CLI command. The command is also available as a Python wrapper.
