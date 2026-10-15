@@ -135,7 +135,7 @@ dt user add bob -f Bob -l Smith -e bob@co.com -P pass   # create user
 dt user add bot -f Bot -l Account -s           # create system user
 dt user add-to-group alice analysts            # add user to group
 dt user rm-from-group alice analysts           # remove user from group
-dt user disable alice                          # disable user (keeps data)
+dt user disable alice                          # disable user (keeps data, signs them out within ~30s)
 dt user enable alice                           # re-enable user
 dt user rm alice                               # remove user permanently
 ```
