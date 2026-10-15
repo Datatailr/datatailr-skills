@@ -16,7 +16,8 @@ Before writing code, determine which components you need to build and how they s
 | Web Apps | A web application that is deployed as a containerized job. Several frameworks are supported, including Streamlit, Dash, Flask, FastAPI, Panel, and standalone Notebook (Voila/jupyter) apps. | [datatailr-deploy-app](../datatailr-deploy-app/SKILL.md) |
 | Excel Add-ins | A set of Excel worksheet functions that are deployed as a containerized job. | [datatailr-deploy-excel-addin](../datatailr-deploy-excel-addin/SKILL.md) |
 | Distributed scikit-learn / joblib | Run joblib-parallel workloads (grid search, cross-validation) on an automatically managed pool of worker containers. | [datatailr-distributed-joblib](../datatailr-distributed-joblib/SKILL.md) |
-| Admin & Cluster Settings | Manage compute nodes, autoscaler capacity, platform settings, login, and ACLs via `dt node` and `dt settings`. | [datatailr-admin](../datatailr-admin/SKILL.md) |
+| Compute Nodes | List, inspect, drain, tag, create, resize and terminate the machines that run jobs, with the `Node` class or `dt node`. | [datatailr-nodes](../datatailr-nodes/SKILL.md) |
+| Admin & Cluster Settings | Manage autoscaler capacity, platform settings, login, ACLs and budgets via `dt settings` and `Budget`. | [datatailr-admin](../datatailr-admin/SKILL.md) |
 
 Pair with [datatailr-project-structure](../datatailr-project-structure/SKILL.md) for which component
 types to build, then the matching [datatailr-deploy-*](../datatailr-deploy-workflow/SKILL.md) skills for the deploy API.
@@ -66,6 +67,10 @@ users = user_client.ls()
 ```
 
 Each `dt` command has a corresponding class in the `datatailr.wrapper` module. Subcommands are available as methods of the class.
+
+## Compatibility errors
+
+Do not routinely check component versions. Investigate compatibility only when a Datatailr command reports an explicit version mismatch or the user requests a compatibility check. Explain the required change and ask for approval before installing anything. After an approved SDK update, restart the Python/agent session before retrying. Do not assume other errors are compatibility problems.
 
 ## Filtering, Sorting and Pagination
 Many list-style `dt` commands support filtering, sorting, and pagination. The filter/sort expression strings are the same across commands that support these options.

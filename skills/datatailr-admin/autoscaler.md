@@ -136,10 +136,10 @@ dt settings get autoscaler --json
 
 ## How autoscaler interacts with nodes
 
-- The autoscaler does not start GPU nodes. A user must start a GPU node manually with `dt node new` and `"node_class": "gpu"` before a job that sets `vram` can run
+- The autoscaler does not start GPU nodes. A user must start a GPU node manually with `Node.new(...)` or `dt node new` and `"node_class": "gpu"` before a job that sets `vram` can run (see [datatailr-nodes](../datatailr-nodes/SKILL.md))
 - The autoscaler reads `settings/autoscaler` on each scale decision
 - When total CPUs in an environment reach `max_cpus`, no new nodes are provisioned
 - Nodes with `--auto-terminate` use `minimum_idle_time` and `minimum_uptime` from this setting. Self-terminate retries start after a random delay and then double that delay so concurrent idle waves do not stampede the cloud API
 - If a node stops reporting, the scheduler marks it dead. After `zombie_timeout`, the controller leader force-terminates the cloud instance if it is still `running` or `draining`. This applies to manually created nodes as well as autoscaler-managed ones
 - Manual `dt node new` bypasses some scheduler logic but still respects quota
-- Use `dt node ls --json` alongside autoscaler settings to diagnose capacity issues
+- Use `Node.ls()` or `dt node ls --json` alongside autoscaler settings to diagnose capacity issues

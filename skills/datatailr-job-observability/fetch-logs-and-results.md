@@ -87,6 +87,11 @@ Instant-run supports mode selection:
 - `instant_run_mode="cloudpickle"`: force cloudpickle payload creation.
 - `instant_run_mode="source"`: force source bundle payload creation.
 
+Cloudpickle mode needs `cloudpickle` in the workstation image's
+`python_requirements` and the same Python minor version locally as in that
+image. `instant_run` checks both before submitting and raises `ValueError`
+if either is not met.
+
 Cloudpickle mode supports module embedding by value:
 
 ```python

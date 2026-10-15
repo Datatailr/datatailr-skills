@@ -124,6 +124,7 @@ For component-specific entrypoint shapes (`main(port)`, Streamlit module, Excel
 - Paths in `python_requirements=` are resolved **on the machine running deploy**;
   the file contents are sent to the remote — the path need not exist inside the image.
 - Root `requirements.txt` is for local/dev only unless you point a job at it explicitly.
+- If the project has a `pyproject.toml`, `python_requirements="auto"` (or its path) uses its `[project].dependencies`, and `python_version="auto"` uses `.python-version` or `requires-python`. The nearest `pyproject.toml` with a `[project]` table between the entrypoint package and the repo root wins.
 - List only what that job needs; shared libs (pandas, requests) may appear in several files.
 
 ## What must live inside the package
@@ -154,7 +155,7 @@ at repo root for seeding — do not assume those files exist in the container.
 | Putting shared code only at repo root | Not packaged |
 | Hyphenated package dirs (`my-app/`) | Invalid / fragile Python package names |
 | Relative imports across job boundaries | Break when package root is installed as site-packages |
-| Assuming root `requirements.txt` is installed automatically | Only `python_requirements=` contents are used |
+| Assuming root `requirements.txt` is installed automatically | Only `python_requirements=` contents are used (`"auto"` reads `pyproject.toml`, never `requirements.txt`) |
 
 ## Decision guide
 

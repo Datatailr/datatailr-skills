@@ -35,7 +35,7 @@ def heavy_computation(x, y):
     return x ** y
 ```
 
-`@task()` accepts optional `memory`, `cpu`, and `vram` to override the workflow defaults for that task. `vram` is GPU memory and uses the same size strings as `memory` (for example `"2g"`). If you omit `vram` on both the task and the workflow, the task JSON omits the `vram` field. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run.
+`@task()` accepts optional `memory`, `cpu`, and `vram` to override the workflow defaults for that task. `vram` is GPU memory and uses the same size strings as `memory` (for example `"2g"`). If you omit `vram` on both the task and the workflow, the task JSON omits the `vram` field. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run (see [datatailr-nodes](../datatailr-nodes/SKILL.md)).
 
 ## Workflow function
 
@@ -70,8 +70,8 @@ Key rules:
 ## `@workflow()` parameters
 
 - `name`: display name on the platform. Defaults to the function name, title-cased.
-- `python_requirements`: a list of pip package names (e.g. `["requests"]`) or a path to a `requirements.txt` file. The path is resolved **locally** when the job definition is built (at deploy time); the file is read on the machine running the deploy script and its **contents** are sent to the remote. If using a path, the file must exist where you run `python deploy.py`.
-- `resources`: default `Resources(memory=..., cpu=..., vram=...)` for all tasks. Individual `@task()` overrides take precedence. `vram` is optional GPU memory, with the same size strings as `memory`. If you omit `vram`, the task JSON omits the `vram` field. A task that omits `vram` keeps the workflow value. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run.
+- `python_requirements`: a list of pip package names (e.g. `["requests"]`), a path to a `requirements.txt` file, a path to a `pyproject.toml` (its `[project].dependencies` are used), or `"auto"` (the dependencies of the project's `pyproject.toml`, found by searching up from the entrypoint package to the repo root; falls back to `pip freeze`). `python_version` likewise accepts a `pyproject.toml` path or `"auto"` (`.python-version`, else `requires-python`). The path is resolved **locally** when the job definition is built (at deploy time); the file is read on the machine running the deploy script and its **contents** are sent to the remote. If using a path, the file must exist where you run `python deploy.py`.
+- `resources`: default `Resources(memory=..., cpu=..., vram=...)` for all tasks. Individual `@task()` overrides take precedence. `vram` is optional GPU memory, with the same size strings as `memory`. If you omit `vram`, the task JSON omits the `vram` field. A task that omits `vram` keeps the workflow value. There is no autoscaling for GPU nodes. If a job sets `vram`, the user must start a GPU node manually before the job can run (see [datatailr-nodes](../datatailr-nodes/SKILL.md)).
 - `schedule`: a `Schedule` for recurring execution (see below).
 - `env_vars`: dict of environment variables passed to every task container.
 - `python_version`: Python version for containers (default `"auto"`).
