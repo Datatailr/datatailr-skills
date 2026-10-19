@@ -1,0 +1,13 @@
+{
+  "name": "datatailr",
+  "description": "Build & deploy with Datatailr",
+  "owner": {
+    "name": "Datatailr"
+  },
+  "plugins": [
+    {
+      "name": "datatailr-skills",
+      "source": "./"
+    }
+  ]
+}
