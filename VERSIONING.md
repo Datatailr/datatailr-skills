@@ -1,25 +1,24 @@
 # Skills versioning
 
-Sonic is the source of truth. This repository mirrors its skills for distribution.
+- **Development:** daily sync updates `main` from Sonic. It does not create
+  release tags, change plugin versions or update installed skills.
+- **Releases:** after the SDK is published to PyPI through Sonic's release
+  workflow, it publishes a matching `v<SDK version>` tag here. The tag contains
+  skills from the same source commit and matching plugin manifest versions.
+  Public `main` is unchanged by this release step.
+- **Selection:** use the tag matching your installed SDK. For example, SDK
+  `0.1.9` corresponds to skills `v0.1.9`, if that tag exists. Do not assume
+  development `main` matches an older SDK. Never move an existing release tag.
 
-The release policy is to give SDK releases and their corresponding skills
-snapshots the same immutable Git tag. Release automation must publish the skills
-from the source snapshot used for that SDK release. Do not move an existing tag
-or tag a later development snapshot as an older SDK release.
+At the time of this update, this repo has no release tags. The manifests on
+`main` use `0.1.0-dev.1`, a placeholder that does not declare SDK compatibility.
+Until a matching tag is available, use the skills bundled with your SDK for
+version-aligned installation; the local Claude plugin flow is for evaluation.
 
-There is no manually maintained compatibility mapping file. Platform-to-SDK
-compatibility is handled separately; selecting the matching skills tag then
-follows the SDK version.
+The SDK still bundles skills, and `datatailr setup-skills` copies those files.
+Selecting marketplace releases through that command and removing bundled
+skills are separate work. Platform–SDK compatibility is handled separately.
 
-## Current behavior
-
-The daily workflow synchronizes `main` only. It does not create release tags,
-change plugin versions, or update installed skills. The plugin manifests retain
-a development placeholder version; it is not an SDK compatibility declaration.
-Use a released matching tag once release publishing is implemented, rather than
-assuming the latest `main` matches an older SDK.
-
-SDK debundling, release tag publishing, and upgrading `datatailr setup-skills`
-to select a matching tag and install for different AI providers are separate
-work. The existing SDK still ships its bundled skills and copies those files
-when `setup-skills` is run.
+For Claude directory releases, select a tested tag in the portal. To release
+the next version, change the tracked tag to the new one and follow validation
+and publishing. See [Claude's update guide](https://claude.com/docs/plugins/submit#change-the-tracked-branch-or-tag).
