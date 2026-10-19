@@ -1,7 +1,7 @@
 {
   "name": "datatailr-skills",
   "version": "0.1.0-dev.1",
-  "description": "Build, deploy, and manage workloads in an existing Datatailr environment.",
+  "description": "Build & deploy with Datatailr",
   "author": {
     "name": "Datatailr",
     "url": "https://www.datatailr.com/"
