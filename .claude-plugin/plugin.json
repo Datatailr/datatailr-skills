@@ -1,6 +1,6 @@
 {
   "name": "datatailr-skills",
-  "version": "0.1.0-dev.1",
+  "version": "0.1.161",
   "description": "Build & deploy with Datatailr",
   "author": {
     "name": "Datatailr",
@@ -12,5 +12,10 @@
   "documentationUrl": "https://ai.docs.datatailr.com/latest/",
   "repository": "https://github.com/Datatailr/datatailr-skills",
   "license": "MIT",
-  "keywords": ["datatailr", "data", "workflows", "deployment"]
+  "keywords": [
+    "datatailr",
+    "data",
+    "workflows",
+    "deployment"
+  ]
 }

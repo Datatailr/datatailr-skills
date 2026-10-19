@@ -58,6 +58,24 @@ build_script_pre="scripts/pre_build.sh"
 
 This is the cleanest option for complex scripts.
 
+## Build secrets (credentials in build scripts)
+
+If a build script needs a credential (e.g. a token for a private package index or registry), **never** hard-code it in the script. Ask the user to create a build secret in the dashboard (**Secret Keys Manager → Build Secrets**) and pass its key in `build_secret_keys`:
+
+```python
+build_secret_keys=["artifacts-token"],
+build_script_pre=(
+    "apt-get update && apt-get install -y curl\n"
+    'curl -fsSL -H "Authorization: Bearer $DT_BUILD_SECRET_artifacts_token" '
+    "-o /opt/model.bin https://artifacts.example.com/model.bin"
+),
+```
+
+- Each key is exposed to both build scripts as `DT_BUILD_SECRET_<key>`, with `/`, `.` and `-` replaced by `_`.
+- Use the variable directly in commands. Never write it to a file (e.g. `npm config set`, `.netrc`, `pip.conf`), or it ends up in the image layer.
+- Values exist only during the build: they are not in the image and not available at runtime (use `Secrets` for runtime credentials, see [datatailr-kv-and-secrets](../datatailr-kv-and-secrets/SKILL.md)).
+- The build fails if a listed secret is missing or the job's `run_as` user can't read it.
+
 ## Package path in the container image
 
 The job bundle is **extracted** (not pip-installed) into `/opt/datatailr/usr/lib/python/site-packages/<package_name>/`, where **`<package_name>` is the name of the directory that is deployed** (the entrypoint package directory, e.g. `my_app`). That path is on `PYTHONPATH`, so inside the running container the package is importable by its directory name — use normal imports like `from my_app.file import function_name`.
