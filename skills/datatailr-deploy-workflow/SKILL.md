@@ -79,6 +79,7 @@ Key rules:
 - `fail_after`: max duration before marked failed (e.g., `"2h"` or `timedelta(hours=2)`).
 - `expire_after`: duration after which completed workflow resources are cleaned up.
 - `build_script_pre` / `build_script_post`: shell commands for the Docker image build. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md) for formatting. If the script must operate on the installed package, it is at `/opt/datatailr/usr/lib/python/site-packages/<package_name>` where `<package_name>` is the name of the directory that is deployed.
+- `build_secret_keys`: list of build secret keys whose values the build scripts need (e.g. registry tokens), exposed as `DT_BUILD_SECRET_<key>`. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md#build-secrets-credentials-in-build-scripts).
 
 ## Scheduling
 

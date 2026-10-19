@@ -19,7 +19,7 @@ Read the tier before you run a command.
 
 | Tier | Rule | SDK | CLI |
 |---|---|---|---|
-| **Read-only** | Run freely | `Node.ls()`, `Node("name")`, `Node.get()`, `Node.exists()`, `node.ps()`, `node.drain_status()`, `node.ls_tags()`, `node.get_tag()`, `Node.instance_types*()` | `node ls`, `node ps`, `node drain-status`, `node ls-tags`, `node get-tag`, `node instance-types*` |
+| **Read-only** | Run freely | `Node.ls()`, `Node("name")`, `Node.get()`, `Node.exists()`, `node.jobs()`, `node.drain_status()`, `node.ls_tags()`, `node.get_tag()`, `Node.instance_types*()` | `node ls`, `node jobs`, `node drain-status`, `node ls-tags`, `node get-tag`, `node instance-types*` |
 | **Confirm** | State the exact command and its impact. Wait for explicit approval | `Node.new()`, `Node.start()`, `Node.stop()`, `Node.restart()`, `Node.change_type()`, `node.drain()`, `node.set_tag()`, `node.rm_tag()` | `node new`, `node start`, `node stop`, `node restart`, `node change-type`, `node drain`, `node set-tag`, `node rm-tag` |
 | **Hard-gate** | Refuse by default. Proceed only if the user names the exact node ids **and** asks you to terminate them | `Node.terminate()` | `node terminate` |
 
@@ -73,18 +73,18 @@ node.availability_zone  # "eu-west-1a"
 node.created_at         # Unix timestamp in seconds
 node.cpu                # {"allocated_cpus": 2.0, "free_cpus": 6.0, "total_cpus": 8}
 node.memory             # bytes: allocated_memory, free_memory, max_memory, used_memory, ...
-node.jobs               # [{"name": ..., "environment": ..., "state": ..., "run_id": ..., "num_cpus": ..., "memory_limit": ...}]
 node.tags               # cloud provider tags, for example {"Name": "compute-node-1"}
 node.to_dict()          # the raw `dt node ls` row
 ```
 
-`Node.ls()` rows do not trigger an extra API call. `node.cpu`, `node.memory` and `node.jobs` are empty when the controller has not registered the node (for example a stopped node).
+`Node.ls()` rows do not trigger an extra API call. `node.cpu` and `node.memory` are empty when the controller has not registered the node (for example a stopped node).
 
-### Containers on a node
+### Jobs on a node
 
 ```python
-containers = node.ps()
-# [{"id": ..., "name": ..., "image": ..., "entrypoint": ..., "network_mode": ..., "creation_time": ...}]
+runs = node.jobs()
+# Job runs in state running or starting, same rows as `dt job runs`:
+# [{"id": ..., "job_name": ..., "type": ..., "instance_id": ..., "state": ..., ...}]
 ```
 
 ### Drain a node
@@ -160,7 +160,7 @@ dt node ls
 dt node ls --json
 dt node ls -f "environment = [dev, pre] and status = running" -s "-created_at"
 dt node ls name=compute                     # name prefix, or id=i-08
-dt node ps -N compute-node-1 --json         # containers on a node; omit -N for the local node
+dt node jobs i-08666efd2a24f10f8 --json     # running jobs on a node, by instance id
 dt node drain -N compute-node-1             # confirm first
 dt node drain-status -N compute-node-1
 dt node drain -s -N compute-node-1          # stop draining; confirm first
@@ -210,4 +210,4 @@ Wrap the whole expression in quotes.
 1. **A job stays pending.** Run `Node.ls(filter="environment = <env>")`. Compare `node.cpu["free_cpus"]` and `node.memory["free_memory"]` with the job resources. Then read the autoscaler settings with [datatailr-admin](../datatailr-admin/SKILL.md).
 2. **A node accepts no jobs.** Run `node.drain_status()`. If it returns `True`, ask the user before you run `node.drain(stop=True)`.
 3. **A GPU job does not start.** Run `Node.ls(filter="node_class = gpu")`. If the list is empty, a user must create a GPU node with `Node.new(instance_type=..., node_class="gpu")`.
-4. **Which containers run on a node?** Run `node.ps()`.
+4. **Which jobs run on a node?** Run `node.jobs()`.
