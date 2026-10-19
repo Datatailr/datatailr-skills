@@ -132,6 +132,7 @@ Key parameters:
 - Use `addin.save()` to deploy the add-in. To start an instance of the addin a user should access it from the UI.
 - `python_version`: Python version for the container image (default `"auto"` -- auto-detects from your environment).
 - `build_script_pre` / `build_script_post`: shell commands for the Docker image build. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md) for formatting. If the script must operate on the installed package, it is at `/opt/datatailr/usr/lib/python/site-packages/<package_name>` where `<package_name>` is the name of the directory that is deployed (e.g. `my_addin`).
+- `build_secret_keys`: list of build secret keys whose values the build scripts need (e.g. registry tokens), exposed as `DT_BUILD_SECRET_<key>`. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md#build-secrets-credentials-in-build-scripts).
 - `env_vars`: dict of environment variables passed to the running container.
 - `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](../datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
 
