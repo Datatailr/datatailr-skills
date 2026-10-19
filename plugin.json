@@ -13,13 +13,18 @@
   "keywords": ["datatailr", "data", "workflows", "deployment"],
   "extensions": {
     "com.openai": {
+      "requires_local_executor": true,
       "interface": {
         "displayName": "Datatailr Skills",
-        "shortDescription": "Build and deploy with Datatailr",
+        "shortDescription": "Deploy Datatailr workloads",
         "longDescription": "Skills for Datatailr workflows, services, web apps, Excel add-ins, storage, administration, and observability. Requires an existing Datatailr environment and the appropriate SDK, CLI, and permissions.",
         "developerName": "Datatailr",
         "category": "Developer Tools",
         "websiteURL": "https://www.datatailr.com/",
+        "supportURL": "https://datatailr.com/contact",
+        "privacyPolicyURL": "https://datatailr.com/privacy-policy",
+        "logo": "./.claude-plugin/icon.png",
+        "composerIcon": "./.claude-plugin/icon.png",
         "defaultPrompt": [
           "Deploy a data processing workflow to my Datatailr development environment.",
           "Build a dashboard using my Datatailr environment.",

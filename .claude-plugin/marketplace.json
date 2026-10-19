@@ -1,0 +1,13 @@
+{
+  "name": "datatailr",
+  "description": "Skills for existing Datatailr environments.",
+  "owner": {
+    "name": "Datatailr"
+  },
+  "plugins": [
+    {
+      "name": "datatailr-skills",
+      "source": "./"
+    }
+  ]
+}
