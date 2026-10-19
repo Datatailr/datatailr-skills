@@ -12,12 +12,13 @@ These are instructions for an agent, not an SDK or a Datatailr installation.
 
 ## Try in Claude Code
 
-With [Claude Code](https://code.claude.com/docs/en/overview) installed, run:
+Download this repository using GitHub's **Code → Download ZIP**, then extract
+and review it. With [Claude Code](https://code.claude.com/docs/en/overview)
+installed, run the following from inside the extracted folder:
 
 ```bash
-git clone https://github.com/Datatailr/datatailr-skills.git
-claude plugin validate ./datatailr-skills
-claude --plugin-dir ./datatailr-skills
+claude plugin validate .
+claude --plugin-dir .
 ```
 
 This loads the plugin for that session; it does not install the SDK or log in
@@ -49,6 +50,7 @@ For maintainers:
    details, and submit. Follow the review and **Publish** steps in the portal.
 
 The README and `.claude-plugin/plugin.json` provide the listing details.
+Claude uses that manifest; the root `plugin.json` supports other agents.
 Local validation does not replace portal validation or review. A
 `marketplace.json` is not required for directory submission.
 See the [official submission guide](https://claude.com/docs/plugins/submit).
