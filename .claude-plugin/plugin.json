@@ -7,6 +7,9 @@
     "url": "https://www.datatailr.com/"
   },
   "homepage": "https://www.datatailr.com/",
+  "privacyPolicyUrl": "https://datatailr.com/privacy-policy",
+  "supportUrl": "https://datatailr.com/contact",
+  "documentationUrl": "https://ai.docs.datatailr.com/latest/",
   "repository": "https://github.com/Datatailr/datatailr-skills",
   "license": "MIT",
   "keywords": ["datatailr", "data", "workflows", "deployment"]
