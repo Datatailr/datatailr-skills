@@ -16,7 +16,7 @@ Commands are split into three tiers. **Read the tier before running anything.**
 
 | Tier | Rule | Examples |
 |---|---|---|
-| **Read-only** | Run freely | `Node.ls()` / `node ls`, `node.ps()` / `node ps`, `node.drain_status()` / `node drain-status`, `Node.instance_types*()` / `node instance-types*`, `node.get_tag()` / `node.ls_tags()`, `settings get`, `settings ls`, `settings get-schema`, `settings ls-schemas`, `Cost.view()`, `Budget.ls()` / `Budget.get()`, `dt cost view` / `list-budgets` / `get-budget` |
+| **Read-only** | Run freely | `Node.ls()` / `node ls`, `node.jobs()` / `node jobs`, `node.drain_status()` / `node drain-status`, `Node.instance_types*()` / `node instance-types*`, `node.get_tag()` / `node.ls_tags()`, `settings get`, `settings ls`, `settings get-schema`, `settings ls-schemas`, `Cost.view()`, `Budget.ls()` / `Budget.get()`, `dt cost view` / `list-budgets` / `get-budget` |
 | **Confirm** | State exact command + impact; wait for explicit user approval | `Node.start/stop/restart/new/change_type()`, `node.drain()`, `node.set_tag()` / `node.rm_tag()` and their `dt node` equivalents, `settings put` for `system`, `workstation`, `image-retention`, `helpdesk`, non-capacity autoscaler fields (e.g. `preferable_families`), `Budget.add()` / `update()` / ACL mutations |
 | **Hard-gate** | **Refuse by default.** Only proceed if the user states the exact target (node id, budget name, or full JSON value) **and** explicitly asks you to apply it | `Node.terminate()` / `node terminate`, capacity autoscaler changes, login/ACL settings, `settings rm`, `Budget.remove()` |
 
