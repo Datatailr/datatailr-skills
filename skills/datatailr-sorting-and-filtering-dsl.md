@@ -41,14 +41,15 @@ Arrays work with `=` (generates `= ANY($N)`) and text operators like `starts_wit
 
 #### Quoted values
 
-Wrap a value in double quotes when it contains spaces or any of `( ) [ ] ,`:
+Wrap a value in double or single quotes when it contains spaces or any of `( ) [ ] ,`. Quoting a plain value is optional: `name = 'my-job'` and `name = my-job` are the same.
 
 ```
 display_name contains "Daily Report"
 display_name = ["Daily Report", "Weekly (EU)"]
+display_name = 'Mike\'s report'
 ```
 
-Inside quotes, `\"` is a literal quote and `\\` a literal backslash; any other backslash is kept as is. A quoted value is always a value, so `"and"` or `"]"` is not read as a keyword or bracket. Closing `)`, `,` and `]` attach right after the closing quote.
+Inside quotes, a backslash before the enclosing quote character (`\"` or `\'`) gives that quote literally and `\\` gives a literal backslash; any other backslash is kept as is. A quoted value is always a value, so `"and"` or `']'` is not read as a keyword or bracket. Closing `)`, `,` and `]` attach right after the closing quote.
 
 #### Parentheses
 
