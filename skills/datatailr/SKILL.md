@@ -3,7 +3,30 @@ name: datatailr
 description: Use the Datatailr platform to build and deploy data processing workflows, long running services with endpoints, web apps and Excel add-ins.
 ---
 
-# Instructions
+# Datatailr
+
+Build, deploy and manage workloads in your Datatailr environment with your
+AI coding assistant. This bundle provides guidance for using the Datatailr
+Python SDK and `dt` CLI, from deploying your first app to troubleshooting jobs.
+
+## What you can do
+
+- Deploy web apps, dashboards, background services and Excel add-ins.
+- Build data pipelines and DAG workflows, and distribute scikit-learn workloads.
+- Inspect job status, runs and logs, and roll back deployments.
+- Work with blob storage, configuration and secrets.
+- Manage users, groups, permissions, compute nodes and budgets.
+
+Requires an existing Datatailr environment, a configured SDK and CLI, and
+permission to perform the requested operations.
+
+## Example requests
+
+- "Deploy this Streamlit dashboard to my Datatailr development environment."
+- "Show the logs for my failed workflow and help me find the cause."
+- "Save this dataset to Datatailr blob storage."
+
+## Instructions
 
 Before writing code, determine which components you need to build and how they should interact with each other. Some tasks will require multiple components to be deployed together.
 
