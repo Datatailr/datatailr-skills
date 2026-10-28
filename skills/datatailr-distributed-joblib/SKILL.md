@@ -75,6 +75,9 @@ with joblib.parallel_backend(
   grid search with shared `X` and `y`) are uploaded once per pool to blob
   storage and referenced by content hash in each task payload. Workers
   fetch each shared object once and keep them in a process-local cache.
+  Objects above 32 MiB move in parallel chunks, so shared data of several
+  GB works. The driver keeps every shared object in memory until the pool
+  shuts down.
 - Exceptions raised in workers propagate to the driver.
 - If a worker container crashes (e.g. out of memory), its task is retried on
   another worker up to 3 times, then fails with a descriptive error. Increase
