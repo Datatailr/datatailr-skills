@@ -71,10 +71,10 @@ When you (the agent) run the deploy script yourself, you may get `RuntimeError: 
 The platform sets these environment variables in every running app container. Use them when the app needs to know its runtime context:
 
 - `DATATAILR_JOB_NAME`: name of the running job.
-- `DATATAILR_USER`: username running the job.
+- `DATATAILR_USER`: the name of the user that the job runs as.
 - `DATATAILR_JOB_TYPE`: always `app` for apps.
 - `DATATAILR_JOB_ENVIRONMENT`: Datatailr compute environment for this job (`dev`, `pre`, or `prod`).
-- `DATATAILR_DOMAIN`: platform domain (useful for constructing URLs).
+- `DATATAILR_DOMAIN`: the domain name of the Datatailr installation. It is the internal name, not the public hostname of the installation.
 
 Dash apps also get `DASH_REQUESTS_PATHNAME_PREFIX` for URL routing (see [dash.md](dash.md)).
 
