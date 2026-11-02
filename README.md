@@ -4,6 +4,8 @@ Skills that teach coding assistants to deploy apps, services and workflows,
 manage data, and troubleshoot jobs in an existing Datatailr environment.
 These are instructions for an agent, not an SDK or a Datatailr installation.
 
+Connect to your Datatailr installation with a browser login, then work in it.
+
 ## Requirements
 
 - An existing Datatailr environment and permission to use it.
@@ -38,6 +40,16 @@ That command follows development `main`; it is separate from approval for
 Claude's public directory. For a checked-out release, use the local command
 above or `claude plugin install datatailr-skills --marketplace .`.
 
+To add the dashboard pane, install the second plugin from the same catalog:
+
+```text
+/plugin install datatailr-dashboard --marketplace Datatailr/datatailr-skills
+```
+
+The pane shows runs, jobs, nodes, users, keys, costs and files of the connected
+installation live, in the Claude desktop app and in the terminal, and it needs
+Claude Code 2.1.299 or later.
+
 ### OpenAI / Codex
 
 After publication, install Datatailr Skills from the OpenAI Plugin Directory
@@ -64,9 +76,11 @@ npx skills@1.7.2 add Datatailr/datatailr-skills
 
 Select your agent and install the `datatailr-skills` bundle. The root `SKILL.md`
 keeps all shared references in the installed folder. Do not select individual
-nested skills or use `--full-depth`: they depend on sibling files. To install a
-checked-out release instead, run `npx skills@1.7.2 add /path/to/datatailr-skills`.
-The repository command follows development `main`.
+nested skills or use `--full-depth`: they depend on sibling files. The skill
+`entry/datatailr-connect` must not be installed alone, because its links point
+at sibling skills. To install a checked-out release instead, run
+`npx skills@1.7.2 add /path/to/datatailr-skills`. The repository command
+follows development `main`.
 
 ## Usage
 
@@ -99,10 +113,13 @@ and source files; configure authentication through the SDK/CLI yourself.
 
 Edit skills in Sonic's `python/datatailr/src/datatailr/agent_skills/`.
 The daily sync copies that tree here at 00:00 CET (23:00 UTC, fixed UTC+1).
-Direct edits under `skills/` are overwritten; the root skill entry point,
-repository docs, icons and manifests are preserved. OpenAI and Cursor share
-the root manifest; Claude reads `.claude-plugin/plugin.json`. Provider-specific
-OpenAI settings stay under `extensions.com.openai`.
+It also copies Sonic's `claude-plugins/datatailr-dashboard/` into
+`datatailr-dashboard/`. Direct edits under `skills/` or `datatailr-dashboard/`
+are overwritten. The connect skill under `entry/` is edited here, and the sync
+does not touch it. The root skill entry point, repository docs, icons and
+manifests are preserved. OpenAI and Cursor share the root manifest.
+Claude reads `.claude-plugin/plugin.json`. Provider-specific OpenAI settings
+stay under `extensions.com.openai`.
 
 See [MARKETPLACES.md](MARKETPLACES.md) for validation and publishing. Syncing
 does not publish marketplace listings or update installed skills.

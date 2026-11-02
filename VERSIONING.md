@@ -4,7 +4,7 @@
   release tags, change plugin versions or update installed skills.
 - **Releases:** after the SDK is published to PyPI through Sonic's release
   workflow, it publishes a matching `v<SDK version>` tag here. The tag contains
-  skills from the same source commit and matching plugin manifest versions.
+  skills from the same source commit and matching skills manifest versions.
   Public `main` is unchanged by this release step.
 - **Selection:** use the tag matching your installed SDK. For example, SDK
   `0.1.9` corresponds to skills `v0.1.9`, if that tag exists. Do not assume
@@ -24,6 +24,13 @@ skills are separate work. Platform–SDK compatibility is handled separately.
 For Claude directory releases, select a tested tag in the portal. To release
 the next version, change the tracked tag to the new one and follow validation
 and publishing. See [Claude's update guide](https://claude.com/docs/plugins/submit#change-the-tracked-branch-or-tag).
+
+The `datatailr-dashboard` plugin keeps its own version. Sonic sets it in the
+dashboard `plugin.json`, and the release script does not change it. It does not
+match the SDK version. A new version reaches `main` with the next sync, and the
+Claude directory submission of the dashboard tracks `main`. A release tag holds
+the dashboard copy of its release commit, so a tag gives a fixed pair of skills
+and dashboard.
 
 OpenAI skills updates require a new ZIP and publication through its portal;
 Cursor updates go through its marketplace review. Repository install commands

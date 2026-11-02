@@ -11,6 +11,7 @@ Python SDK and `dt` CLI, from deploying your first app to troubleshooting jobs.
 
 ## What you can do
 
+- Connect to your Datatailr installation with a browser login, then work in it.
 - Deploy web apps, dashboards, background services and Excel add-ins.
 - Build data pipelines and DAG workflows, and distribute scikit-learn workloads.
 - Inspect job status, runs and logs, and roll back deployments.
@@ -28,12 +29,14 @@ permission to perform the requested operations.
 
 ## Instructions for the agent
 
+If the environment is not set up or you are not logged in, read
+[the connect skill](entry/datatailr-connect/SKILL.md) first.
+
 Read [the Datatailr guide](skills/datatailr/SKILL.md), then the relevant
 `SKILL.md` under `skills/` for the requested operation. Follow its linked
 references as needed; resolve each link relative to the file containing it.
 For user and group management, read
 [users and groups](skills/datatailr-users-and-groups/SKILL.md).
 
-Use the user's configured SDK, CLI and environment. If setup or login is
-missing, explain what the user needs to configure; do not request passwords
+Use the user's configured SDK, CLI and environment. Do not request passwords
 or tokens in chat. Ask before installing or upgrading software.

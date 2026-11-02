@@ -1,7 +1,7 @@
 # Publish Datatailr skills
 
 Use a tested release tag containing this packaging and matching the SDK, with
-the same version in both plugin manifests. Include the entire repository
+the same version in both skills manifests. Include the entire repository
 contents; the skills share references. No MCP server or automatic setup hook
 is required.
 
@@ -9,8 +9,9 @@ is required.
 
 - Follow the local setup in [README.md](README.md). Check skill discovery,
   shared references, and the example prompts against a development environment.
-- Run `claude plugin validate .` for the catalog and
-  `claude plugin validate .claude-plugin/plugin.json` for the Claude manifest.
+- Run `claude plugin validate --profile directory --strict .` on the repository
+  root and `claude plugin validate --profile directory --strict datatailr-dashboard`
+  on the dashboard folder. Both must pass without warnings.
 - Validate root `plugin.json` against its declared Agent Plugins schema.
 - Confirm the privacy policy covers the submitted functionality and retention.
   A public Terms of Service URL has not been supplied; add it to the relevant
@@ -18,12 +19,27 @@ is required.
 
 ## Claude
 
+The repository holds two plugins. Each plugin is one submission in the portal.
+
 1. Open [the developer portal](https://claude.ai/directory/manage) with the
    intended publisher organization and GitHub write access.
-2. Choose **Submit new → Plugin bundle**, enter `Datatailr/datatailr-skills`,
-   leave the plugin path empty, and select the tested tag.
-3. Validate, resolve blocking findings, complete listing/data-handling fields,
-   submit for review, then follow the portal's publication steps.
+2. Submit the skills plugin. Choose **Submit new → Plugin bundle**, enter
+   `Datatailr/datatailr-skills`, leave the plugin path empty, and select the
+   tested release tag. To release the next version, change the tracked tag.
+3. Submit the dashboard plugin. Choose **Submit new → Plugin bundle**, enter
+   `Datatailr/datatailr-skills`, set the plugin path to `datatailr-dashboard`,
+   and track the branch `main`. A new `version` in Sonic's dashboard
+   `plugin.json` reaches `main` with the next sync. That is the release step.
+   The directory reviews each new version before it goes live.
+4. For each submission, validate, resolve blocking findings, complete the
+   listing and data-handling fields, submit for review, then follow the
+   portal's publication steps.
+
+The dashboard holds a hooks module, which is code. The portal applies its own
+rules to code, a safety scan and a policy review. For the data-handling
+questions, answer that both plugins send data only to the user's own Datatailr
+installation, through the `datatailr` CLI session, and to no other service.
+Neither plugin declares a connector.
 
 The repository catalog enables direct Claude Code installation independently
 of directory approval. Keep the existing brand name; any name-confusion hold
@@ -47,7 +63,8 @@ needs reviewer resolution. [Submission guide](https://claude.com/docs/plugins/su
 
 The portable root manifest includes desktop-only execution, listing details
 and icon paths. Skills-only submissions do not require MCP test cases or a
-demo recording. Updates require a new ZIP.
+demo recording. OpenAI reads only `skills/`, so it does not get the connect
+skill. Updates require a new ZIP.
 [Submission guide](https://developers.openai.com/plugins/deploy/submission) ·
 [Desktop requirements](https://developers.openai.com/plugins/deploy/desktop-only).
 
@@ -56,6 +73,7 @@ demo recording. Updates require a new ZIP.
 Submit the public repository at [Cursor Marketplace](https://cursor.com/marketplace/publish)
 after testing the local plugin. Cursor accepts the root Agent Plugins manifest;
 this single-plugin repo needs no Cursor-specific manifest or marketplace catalog.
+Cursor reads only `skills/`, so it does not get the connect skill.
 Initial listings and updates are reviewed.
 [Requirements](https://cursor.com/docs/reference/plugins).
 
