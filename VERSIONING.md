@@ -12,9 +12,9 @@
   `0.1.9` corresponds to skills `v0.1.9`, if that tag exists. Do not assume
   development `main` matches an older SDK. Never move an existing release tag.
 
-The manifests on `main` use a development version that does not declare SDK
-compatibility. Check the repository's tags for a matching SDK release. If no
-matching tag exists, use the skills bundled with your SDK.
+The skills manifests on `main` use a development version that does not declare
+SDK compatibility. Check the repository's tags for a matching SDK release. If
+no matching tag exists, use the skills bundled with your SDK.
 Older tags retain their original packaging. The Claude catalog and skills.sh
 bundle require a tag containing `.claude-plugin/marketplace.json` and the root
 `SKILL.md`; do not move an old tag to add them.
@@ -23,9 +23,9 @@ The SDK still bundles skills, and `datatailr setup-skills` copies those files.
 Selecting marketplace releases through that command and removing bundled
 skills are separate work. Platform–SDK compatibility is handled separately.
 
-For Claude directory releases, select a tested tag in the portal. To release
-the next version, change the tracked tag to the new one and follow validation
-and publishing. See [Claude's update guide](https://claude.com/docs/plugins/submit#change-the-tracked-branch-or-tag).
+For Claude directory releases of the skills plugin, select a tested tag in the
+portal. To release the next version, change the tracked tag to the new one and
+follow validation and publishing. See [Claude's update guide](https://claude.com/docs/plugins/submit#change-the-tracked-branch-or-tag).
 
 The `datatailr-dashboard` plugin keeps its own version. Sonic sets it in the
 dashboard `plugin.json`, and the release script does not change it. It does not

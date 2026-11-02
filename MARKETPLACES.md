@@ -1,9 +1,10 @@
 # Publish Datatailr skills
 
-Use a tested release tag containing this packaging and matching the SDK, with
-the same version in both skills manifests. Include the entire repository
-contents; the skills share references. No MCP server or automatic setup hook
-is required.
+For the skills plugin, use a tested release tag containing this packaging and
+matching the SDK, with the same version in both skills manifests. Include the
+entire repository contents, because the skills share references. The skills
+plugin needs no MCP server or automatic setup hook. The dashboard plugin tracks
+`main` and holds a hooks module.
 
 ## Before submitting
 
@@ -37,9 +38,15 @@ The repository holds two plugins. Each plugin is one submission in the portal.
 
 The dashboard holds a hooks module, which is code. The portal applies its own
 rules to code, a safety scan and a policy review. For the data-handling
-questions, answer that both plugins send data only to the user's own Datatailr
-installation, through the `datatailr` CLI session, and to no other service.
-Neither plugin declares a connector.
+questions, answer for each plugin.
+
+- **Skills plugin.** Its connect skill downloads the `datatailr` SDK from PyPI.
+  Code that the user deploys can reach other services, as the "Data handling"
+  section of [README.md](README.md) says. It declares no connector.
+- **Dashboard.** It sends data only to the user's own Datatailr installation,
+  through the `datatailr` CLI session. What it shares with Claude stays inside
+  the Claude session. That is a short summary of the page, and on Explain the
+  facts and the last log lines. It declares no connector.
 
 The repository catalog enables direct Claude Code installation independently
 of directory approval. Keep the existing brand name; any name-confusion hold
@@ -64,7 +71,9 @@ needs reviewer resolution. [Submission guide](https://claude.com/docs/plugins/su
 The portable root manifest includes desktop-only execution, listing details
 and icon paths. Skills-only submissions do not require MCP test cases or a
 demo recording. OpenAI reads only `skills/`, so it does not get the connect
-skill. Updates require a new ZIP.
+skill. The skills bundle and the OpenAI ZIP carry the `datatailr-dashboard/`
+files as inert content. The ZIP can be limited with `git archive` pathspecs if
+a reviewer asks. Updates require a new ZIP.
 [Submission guide](https://developers.openai.com/plugins/deploy/submission) ·
 [Desktop requirements](https://developers.openai.com/plugins/deploy/desktop-only).
 

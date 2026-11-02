@@ -52,7 +52,9 @@ installation live, in the Claude desktop app and in the terminal, and it needs
 Claude Code 2.1.299 or later.
 
 Then ask Claude to connect to Datatailr. The `datatailr-connect` skill creates a
-project, installs the SDK and logs you in with a browser approval.
+project, installs the SDK and logs you in with a browser approval. The
+dashboard needs the CLI path from the connect skill as its `cliPath` option,
+and `/dt` opens the pane.
 
 ### OpenAI / Codex
 
