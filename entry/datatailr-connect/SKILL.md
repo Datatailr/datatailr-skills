@@ -49,9 +49,15 @@ Replace `<agent>` with `claude`, `codex` or `cursor`, the agent you are running 
 
 ## 3. Log in with device login
 
-First check whether the user is already logged in. Run `.venv/bin/dt user ls`. If it prints users, the user is already logged in to their installation, so skip the rest of this step. If the command fails, or `.venv/bin/dt` does not exist, continue with the login.
-
 Find the installation URL. Use the one the user gave. If there is none, use `$DATATAILR_BASE_URL` if it is set. Otherwise ask the user. The URL is not a secret.
+
+Then check whether the user is already logged in to that installation. The CLI keeps its session in `~/.dt/remote_client/remote_client.cfg`. That file holds the session token, so never print it. Read the URL alone with:
+
+```bash
+.venv/bin/python -c 'import json, os; print(json.load(open(os.path.expanduser("~/.dt/remote_client/remote_client.cfg"))).get("base_url", ""))'
+```
+
+If it prints the same URL as the one you found, run `.venv/bin/dt user ls`. Ignore a trailing slash and the case of the host when you compare the URLs. If `dt user ls` prints users, the user is logged in to that installation, so skip the rest of this step. If the file is missing, the URL differs, or `dt user ls` fails, continue with the login.
 
 **The whole login happens in ONE response.** When your turn ends, background processes stop. If you end your turn after you share the link, the approval reaches nothing and the login silently fails.
 
