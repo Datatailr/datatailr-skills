@@ -1,7 +1,9 @@
 # Skills versioning
 
 - **Development:** daily sync updates `main` from Sonic. It does not create
-  release tags, change plugin versions or update installed skills.
+  release tags, change the skills manifest versions or update installed
+  skills. The dashboard keeps the version that Sonic gives it, so a new
+  dashboard version moves with the sync.
 - **Releases:** after the SDK is published to PyPI through Sonic's release
   workflow, it publishes a matching `v<SDK version>` tag here. The tag contains
   skills from the same source commit and matching skills manifest versions.

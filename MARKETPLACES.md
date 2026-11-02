@@ -72,7 +72,7 @@ skill. Updates require a new ZIP.
 
 Submit the public repository at [Cursor Marketplace](https://cursor.com/marketplace/publish)
 after testing the local plugin. Cursor accepts the root Agent Plugins manifest;
-this single-plugin repo needs no Cursor-specific manifest or marketplace catalog.
+this repo needs no Cursor-specific manifest or marketplace catalog.
 Cursor reads only `skills/`, so it does not get the connect skill.
 Initial listings and updates are reviewed.
 [Requirements](https://cursor.com/docs/reference/plugins).

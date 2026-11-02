@@ -10,6 +10,7 @@ Connect to your Datatailr installation with a browser login, then work in it.
 
 - An existing Datatailr environment and permission to use it.
 - A compatible Datatailr Python SDK and configured, authenticated `dt` CLI.
+  Claude Code can do this for you through the connect skill.
 - An agent that can run local commands and reach your environment.
 
 ## Install or try locally
@@ -49,6 +50,9 @@ To add the dashboard pane, install the second plugin from the same catalog:
 The pane shows runs, jobs, nodes, users, keys, costs and files of the connected
 installation live, in the Claude desktop app and in the terminal, and it needs
 Claude Code 2.1.299 or later.
+
+Then ask Claude to connect to Datatailr. The `datatailr-connect` skill creates a
+project, installs the SDK and logs you in with a browser approval.
 
 ### OpenAI / Codex
 
