@@ -155,8 +155,8 @@ Each task runs in its own container. If a task reads from KV or Secrets:
 The platform sets these environment variables in every running task container. Use them when tasks need to know their runtime context:
 
 - `DATATAILR_JOB_NAME`: name of the running task.
-- `DATATAILR_USER`: username running the workflow.
+- `DATATAILR_USER`: the name of the user that the workflow runs as.
 - `DATATAILR_JOB_TYPE`: always `batch` for workflow tasks.
 - `DATATAILR_JOB_ENVIRONMENT`: Datatailr compute environment (`dev`, `pre`, or `prod`).
 - `DATATAILR_BATCH_RUN_ID`: unique ID for this workflow run.
-- `DATATAILR_DOMAIN`: platform domain.
+- `DATATAILR_DOMAIN`: the domain name of the Datatailr installation. It is the internal name, not the public hostname of the installation.
