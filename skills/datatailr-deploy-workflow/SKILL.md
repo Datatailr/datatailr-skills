@@ -98,6 +98,11 @@ def daily_workflow():
 
 `Schedule` accepts either a raw `cron_expression` or human-readable helpers: `at_hours`, `at_minutes`, `every_hour`, `every_minute`, `weekdays`, `day_of_month`, `in_month`, `every_month`, `timezone`.
 
+- A raw `cron_expression` has six fields: second, minute, hour, day of month, month, day of week (e.g. `"0 0 7 * * 1-5"`). Day of week is 0 (Sunday) to 6 (Saturday). A five-field expression gets second `0` in front.
+- `weekdays` accepts `"Sun"`. It compiles to day 0, so `["Sat", "Sun"]` gives `0,6`.
+- Without minute helpers, the schedule runs at minute 0. Without minute and hour helpers, it runs at 00:00: `Schedule(weekdays=["Sun"])` runs at 00:00 every Sunday.
+- `timezone` (IANA name, e.g. `"Europe/London"`) is stored with the workflow and sets the run date (`rundate`). The scheduler computes the run times in UTC, so give UTC hours.
+
 ## Build environment and native dependencies
 
 Datatailr jobs run in **Linux (Debian) containers**. The user's local OS (macOS, Windows, etc.) is **irrelevant** to the build.
@@ -155,8 +160,8 @@ Each task runs in its own container. If a task reads from KV or Secrets:
 The platform sets these environment variables in every running task container. Use them when tasks need to know their runtime context:
 
 - `DATATAILR_JOB_NAME`: name of the running task.
-- `DATATAILR_USER`: username running the workflow.
+- `DATATAILR_USER`: the name of the user that the workflow runs as.
 - `DATATAILR_JOB_TYPE`: always `batch` for workflow tasks.
 - `DATATAILR_JOB_ENVIRONMENT`: Datatailr compute environment (`dev`, `pre`, or `prod`).
 - `DATATAILR_BATCH_RUN_ID`: unique ID for this workflow run.
-- `DATATAILR_DOMAIN`: platform domain.
+- `DATATAILR_DOMAIN`: the domain name of the Datatailr installation. It is the internal name, not the public hostname of the installation.

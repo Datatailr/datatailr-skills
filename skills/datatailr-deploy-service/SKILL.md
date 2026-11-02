@@ -110,7 +110,7 @@ For full details on constructing URLs, authentication patterns, and naming conve
 The platform sets these environment variables in every running service container. Use them when the service needs to know its runtime context:
 
 - `DATATAILR_JOB_NAME`: name of the running service.
-- `DATATAILR_USER`: username running the service.
+- `DATATAILR_USER`: the name of the user that the service runs as.
 - `DATATAILR_JOB_TYPE`: always `service` for services.
 - `DATATAILR_JOB_ENVIRONMENT`: Datatailr compute environment (`dev`, `pre`, or `prod`).
-- `DATATAILR_DOMAIN`: platform domain (useful for constructing URLs).
+- `DATATAILR_DOMAIN`: the domain name of the Datatailr installation. It is the internal name, not the public hostname of the installation.

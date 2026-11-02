@@ -165,9 +165,10 @@ When you (the agent) run the deploy script yourself, you may get `RuntimeError: 
 The platform sets these environment variables in every running add-in container:
 
 - `DATATAILR_JOB_NAME`: name of the running add-in.
-- `DATATAILR_USER`: username running the add-in.
+- `DATATAILR_USER`: the name of the user that the add-in runs as.
 - `DATATAILR_JOB_ENVIRONMENT`: `dev`, `pre`, or `prod`.
 - `DATATAILR_JOB_TYPE`: always `excel` for Excel add-ins.
+- `DATATAILR_DOMAIN`: the domain name of the Datatailr installation. It is the internal name, not the public hostname of the installation.
 
 ## Calling other services
 
