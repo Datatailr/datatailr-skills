@@ -27,6 +27,8 @@ python -m venv .venv
 .venv/bin/python -m pip install --upgrade datatailr
 ```
 
+If `python` does not exist, use `python3` for the first command. On Windows the venv folder is `.venv\Scripts` instead of `.venv/bin`. Use that folder wherever this skill says `.venv/bin`.
+
 Keep the venv inside the project directory (`.venv`), not system-wide.
 
 The shell does not keep an activated venv or an exported `PATH` between commands. Do not activate the venv. Run `.venv/bin/python` and `.venv/bin/dt` by their path in every command. You can also put the venv's `bin` directory on `PATH` at the start of each command that needs `dt`:
@@ -57,21 +59,38 @@ Then check whether the user is already logged in to that installation. The CLI k
 .venv/bin/python -c 'import json, os; print(json.load(open(os.path.expanduser("~/.dt/remote_client/remote_client.cfg"))).get("base_url", ""))'
 ```
 
-If it prints the same URL as the one you found, run `.venv/bin/dt user ls`. Ignore a trailing slash and the case of the host when you compare the URLs. If `dt user ls` prints users, the user is logged in to that installation, so skip the rest of this step. If the file is missing, the URL differs, or `dt user ls` fails, continue with the login.
+Compare it with the URL you found. Ignore a trailing slash and the case of the host. Add `https://` to the URL you found when the user gave no scheme, because the CLI saves the URL with it. If the file is missing or the URLs differ, continue with the login.
+
+If the URLs match, install the CLI without a login. `.venv/bin/dt` exists only after a login or `setup-cli`, so in a new project the next check cannot work without this command:
+
+```bash
+.venv/bin/python -m datatailr setup-cli --no-login
+```
+
+Then run the check. It keeps the user list out of the conversation:
+
+```bash
+.venv/bin/dt user ls > /dev/null && echo logged-in
+```
+
+If it prints `logged-in`, the user is logged in to that installation, so skip the rest of this step. If it fails, continue with the login.
 
 **The whole login happens in ONE response.** When your turn ends, background processes stop. If you end your turn after you share the link, the approval reaches nothing and the login silently fails.
 
 Start the login **in the background**. It blocks while it polls for approval, for up to 15 minutes:
 
 ```bash
-.venv/bin/python -m datatailr login --device --url "<base-url>" > .dt-login.log 2>&1 &
+DATATAILR_BASE_URL="<base-url>" .venv/bin/python -m datatailr login --device --url "<base-url>" > .dt-login.log 2>&1 &
 ```
+
+The SDK lets `DATATAILR_BASE_URL` override `--url`. A URL that the user exported in the shell could send the login to another installation, so the command sets the variable to the right URL.
 
 Then, without ending the turn:
 
 1. Read `.dt-login.log` until it shows the line after `Open this URL in your browser to log in:`.
 2. Give that URL to the user and ask them to open it and approve. If the user is not signed in to Datatailr, the page asks them to sign in first.
 3. Keep polling the log in the same response until the command finishes. Success prints `Logged in as <user>` followed by `Installed remote dt CLI to: ...`. Device login installs the `dt` CLI too, so there is no separate `setup-cli` step.
+4. After `Logged in as`, rerun the `base_url` one-liner and make sure that it prints the URL from the first paragraph. Compare the two URLs in the same way as above. If it does not, tell the user and stop.
 
 Do not fall back to username and password login. Do not ask the user for their password. If the approval link expires or the approval fails, start the login again and share the new link.
 
@@ -82,6 +101,8 @@ Never print the session token or the contents of `~/.dt/remote_client/remote_cli
 To build or deploy something, read the [`datatailr`](../../skills/datatailr/SKILL.md) skill and follow the skill it names. To look at jobs, runs or logs, read [`datatailr-job-observability`](../../skills/datatailr-job-observability/SKILL.md).
 
 In every later command, keep using `.venv/bin/python` and `.venv/bin/dt`, or the `PATH` export from step 1. The skills you hand over to also run `dt` and `python`.
+
+If the `datatailr-dashboard` plugin is installed, give the user the absolute path `<project>/.venv/bin/datatailr`. Use the absolute path of the project directory from step 0. Tell them to set it as the plugin's `cliPath` option with `claude plugin configure datatailr-dashboard`, and then to type `/dt` to open the pane. Without it the pane cannot find the CLI, because the venv is not on the `PATH` of the Claude process.
 
 ## Troubleshooting
 
