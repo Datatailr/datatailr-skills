@@ -1,0 +1,30 @@
+{
+  "name": "datatailr-dashboard",
+  "version": "0.1.0",
+  "description": "Live Datatailr platform dashboard in a pane of the Claude Code desktop app",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Datatailr"
+  },
+  "license": "MIT",
+  "userConfig": {
+    "installationsDir": {
+      "type": "string",
+      "title": "Installations folder",
+      "description": "Folder with one env file for each Datatailr installation. The file name without .env is the name of the installation.",
+      "default": "~/.datatailr/installations"
+    },
+    "cliPath": {
+      "type": "string",
+      "title": "Datatailr CLI path",
+      "description": "Path to the datatailr CLI. If it is empty, the plugin searches the PATH of the Claude process. If you set it, the plugin uses only that path.",
+      "default": ""
+    },
+    "shareContext": {
+      "type": "boolean",
+      "title": "Share pane context with Claude",
+      "description": "Let Claude see a short summary of what the pane shows",
+      "default": true
+    }
+  }
+}
