@@ -63,7 +63,7 @@ pane draws without the timeline chart.
 
 ## Install
 
-In Claude Code 2.1.275 or later, run
+In Claude Code 2.1.299 or later, run
 `/plugin install datatailr-dashboard --marketplace Datatailr/datatailr-skills`.
 The command follows the development `main` branch of the marketplace
 repository. The skills plugin, `datatailr-skills`, installs the same way and
@@ -222,41 +222,27 @@ not copy it.
 
 ## Local development
 
-To work on the plugin, load it from the folder:
+To load the plugin from a folder, follow these steps:
 
-1. Add the plugin folder to the `env` block of `~/.claude/settings.json`:
+1. Add the folder that holds this file to the `env` block of
+   `~/.claude/settings.json`. Replace `<this folder>` with its path:
 
    ```json
    "env": {
-     "CLAUDE_CODE_PLUGIN_DIRS": "/path/to/sonic/claude-plugins/datatailr-dashboard",
+     "CLAUDE_CODE_PLUGIN_DIRS": "<this folder>",
      "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1"
    }
    ```
 
 2. Start a new Claude Code session. A session that the desktop app hosts loads
    the plugin only when the session starts.
-3. Type `/dt`.
+3. Type `/dt` to open the pane.
 
 `CLAUDE_CODE_PLUGIN_DIR_WATCH=1` reloads the plugin when a file in the folder
-changes. If a change in `src/` has no effect, start a new session. It is not
-yet known whether a change in `src/` alone starts the plugin again.
+changes. If a change in `src/` has no effect, start a new session.
 
 The tests, `tsconfig.json` and the design documents are in the Datatailr sonic
 repository. The published plugin does not carry them.
-
-Run these commands from the repository root to check the plugin. All three must
-pass before you commit:
-
-```bash
-claude plugin test claude-plugins/datatailr-dashboard
-claude plugin validate claude-plugins/datatailr-dashboard
-npx -y -p typescript@5.6.3 tsc -p claude-plugins/datatailr-dashboard
-```
-
-Every test that mounts the pane runs for the `desktop` and the `terminal`
-surface. The tests and the fixtures use hosts under `example.datatailr.com`,
-for example `https://app.example.datatailr.com`. Do not put a real host name in
-any file of the plugin.
 
 ## License
 
