@@ -83,7 +83,7 @@ Start the login **in the background**. It blocks while it polls for approval, fo
 DATATAILR_BASE_URL="<base-url>" .venv/bin/python -m datatailr login --device --url "<base-url>" > .dt-login.log 2>&1 &
 ```
 
-The SDK lets `DATATAILR_BASE_URL` override `--url`. A URL that the user exported in the shell can send the login to another installation, so the command sets the variable to the right URL.
+The SDK lets `DATATAILR_BASE_URL` override `--url`. A URL that the user exported in the shell can send the login to another installation. So the command sets the variable to the right URL.
 
 Then, without ending the turn:
 
@@ -100,9 +100,15 @@ Never print the session token or the contents of `~/.dt/remote_client/remote_cli
 
 To build or deploy something, read the [`datatailr`](../../skills/datatailr/SKILL.md) skill and follow the skill it names. To look at jobs, runs or logs, read [`datatailr-job-observability`](../../skills/datatailr-job-observability/SKILL.md).
 
-In every later command, keep using `.venv/bin/python` and `.venv/bin/dt`, or the `PATH` export from step 1. The skills you hand over to also run `dt` and `python`.
+In every later command, keep using `.venv/bin/python` and `.venv/bin/dt`. A command that runs the Python SDK, such as a deploy script, also needs the venv's `bin` directory on `PATH`. Put it there in that same command, because the SDK starts `dt` by name:
 
-If the `datatailr-dashboard` plugin is installed, give the user the absolute path `<project>/.venv/bin/datatailr`. Use the absolute path of the project directory from step 0. Tell them to set it as the plugin's `cliPath` option with `claude plugin configure datatailr-dashboard`, and then to type `/dt` to open the pane. Without it the pane cannot find the CLI, because the venv is not on the `PATH` of the Claude process.
+```bash
+PATH="$(pwd)/.venv/bin:$PATH" .venv/bin/python deploy.py
+```
+
+The skills you hand over to also run `dt` and `python`.
+
+If the `datatailr-dashboard` plugin is installed, give the user the absolute path `<project>/.venv/bin/datatailr`. Use the absolute path of the project directory from step 0. On Windows the path is `<project>\.venv\Scripts\datatailr.exe`, with the `.exe` suffix, because the plugin checks the exact path. Tell them to set it as the plugin's `cliPath` option with `claude plugin configure datatailr-dashboard`, and then to type `/dt` to open the pane. Without it the pane cannot find the CLI, because the venv is not on the `PATH` of the Claude process.
 
 ## Troubleshooting
 
