@@ -19,7 +19,8 @@ const savedHint = (folder: string) =>
   `The plugin saves the URL in ${folder.replace(/\/+$/, '')}/. Add DATATAILR_USER_NAME and DATATAILR_USER_PASSWORD ` +
   'to that file to log in without the browser next time.'
 
-export function NoCliScreen(ui: UiCtx): RenderElement {
+/** How to get the CLI: the whole screen with no session, and in place of a login that found no CLI. */
+export function InstallCli(ui: UiCtx): RenderElement {
   const { Box, Code, Text } = ui.els
 
   return (
@@ -92,13 +93,20 @@ export function ErrorScreen(ui: UiCtx, p: { message: string; onRetry(): void }):
   )
 }
 
-export function ExpiredBar(ui: UiCtx, p: { onLoginAgain(): void }): RenderElement {
+export function ExpiredBar(ui: UiCtx, p: { isCliMissing: boolean; onLoginAgain(): void }): RenderElement {
   const { Box, Button, Text } = ui.els
-
-  return (
+  const bar = (
     <Box flexWrap="wrap" gap={1}>
       <Text color="warning">Your session ended.</Text>
       <Button key="login-again" label="Log in again" onPress={p.onLoginAgain} />
+    </Box>
+  )
+  if (!p.isCliMissing) return bar
+
+  return (
+    <Box flexDirection="column" gap={1}>
+      {bar}
+      {InstallCli(ui)}
     </Box>
   )
 }

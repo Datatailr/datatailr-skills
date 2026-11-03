@@ -17,6 +17,7 @@ import type { SessionState } from '../core/session'
 import { installationsFolder, installationsFor } from '../core/session'
 import {
   type LogState,
+  readCliMissing,
   readConfirm,
   readExplain,
   readLoads,
@@ -34,7 +35,7 @@ import { type PaneActions, type Runtime, createActions, installationOf, sectionA
 import { Header } from './header'
 import { SUMMARY_KEY, currentSection } from './loads'
 import { RAIL_MIN_COLUMNS, Rail, railEntries, railWidth } from './rail'
-import { DisconnectedScreen, ErrorScreen, ExpiredBar, LoggingInScreen, NoCliScreen } from './screens'
+import { DisconnectedScreen, ErrorScreen, ExpiredBar, InstallCli, LoggingInScreen } from './screens'
 import { SwitcherButton, SwitcherList } from './switcher'
 import { loadsFor, sectionLoadOf, summaryOf, viewOf } from './view'
 
@@ -46,9 +47,9 @@ export async function renderPane($: EngineInterface, e: RenderInput<'Pane'>, run
   const ui: UiCtx = { els: $.ui.resolve(e), surface: e.surface, columns: e.props.bodyColumns }
   const { Box } = ui.els
   const act = createActions($, runtime)
-  const session = await readSession($)
+  const [session, isCliMissing] = await Promise.all([readSession($), readCliMissing($)])
   const isDashboard = session.kind === 'connected' || session.kind === 'expired'
-  const switcher = await drawSwitcher($, ui, runtime, act, session)
+  const switcher = await drawSwitcher($, ui, runtime, act, session, isCliMissing)
 
   if (!isDashboard) {
     return (
@@ -78,7 +79,7 @@ export async function renderPane($: EngineInterface, e: RenderInput<'Pane'>, run
   const contentUi: UiCtx = isWide ? { ...ui, columns: ui.columns - railWidth(entries) - RAIL_GAP } : ui
 
   const parts: RenderElement[] = []
-  if (session.kind === 'expired') parts.push(ExpiredBar(ui, { onLoginAgain: fire(act.loginAgain) }))
+  if (session.kind === 'expired') parts.push(ExpiredBar(ui, { isCliMissing, onLoginAgain: fire(act.loginAgain) }))
   if (confirm !== null && session.kind === 'connected' && confirm.url === session.url) {
     parts.push(
       ConfirmBar(contentUi, {
@@ -91,8 +92,10 @@ export async function renderPane($: EngineInterface, e: RenderInput<'Pane'>, run
     )
   }
 
+  // A section that draws its own load draws it, whatever the summary did.
+  const isSummaryNeeded = section === null || section.needsSummary === true
   let content: RenderElement
-  if (summary === null && summaryLoad?.error != null && summaryLoad.error !== 'logged-out') {
+  if (isSummaryNeeded && summary === null && summaryLoad?.error != null && summaryLoad.error !== 'logged-out') {
     content = ErrorState(contentUi, {
       kind: summaryLoad.error,
       installation: session.installation,
@@ -169,7 +172,7 @@ function logOf(section: Section<unknown>, route: Route, data: unknown, log: LogS
 function screenFor(ui: UiCtx, act: PaneActions, session: SessionState, folder: string): RenderElement {
   switch (session.kind) {
     case 'no-cli':
-      return NoCliScreen(ui)
+      return InstallCli(ui)
     case 'logging-in':
       return LoggingInScreen(ui, { session, onCancel: fire(act.cancelLogin) })
     case 'error':
@@ -185,6 +188,7 @@ async function drawSwitcher(
   runtime: Runtime,
   act: PaneActions,
   session: SessionState,
+  isCliMissing: boolean,
 ): Promise<{ button: RenderElement; list: RenderElement | null }> {
   const current = installationOf(session)
   const button = SwitcherButton(ui, { installation: current, onPress: fire(act.toggleSwitcher) })
@@ -197,6 +201,7 @@ async function drawSwitcher(
     canAdd: session.kind !== 'disconnected',
     isAdding: runtime.isAddingInstallation,
     canLoginAgain: session.kind !== 'expired',
+    isCliMissing,
     onPick: name => settle(act.pick(name)),
     onShowAdd: () => act.showAddInstallation(),
     onAdd: url => settle(act.add(url)),

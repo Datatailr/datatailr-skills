@@ -11,6 +11,7 @@
 import type { EngineInterface } from 'claude-code'
 
 import { ApiError, type ErrorKind } from './api'
+import { cliConfigModifiedAt } from './installations'
 import { isPaneShown } from './panes'
 import { markExpired } from './session'
 import { type LoadState, readLoads, readSession, updateLoads } from './state'
@@ -131,8 +132,9 @@ export function startScheduler($: EngineInterface, specs: () => LoadSpec[], hook
       at = await $.clock.now()
     } catch {
     }
-    if (!(await isStill(url))) {
-      // The installation changed while the load ran: its answer is dropped, and the load runs again at once.
+    if (!(await isStill(url)) || (await isFromBeforeLogin(outcome, claimedAt))) {
+      // The installation changed while the load ran, or a login did: its answer is dropped, and the load
+      // runs again at once.
       try {
         await updateLoads($, loads => ({ ...loads, [spec.key]: { ...(loads[spec.key] ?? emptyLoad(at)), inFlight: false, nextAt: at } }))
       } catch {
@@ -161,6 +163,14 @@ export function startScheduler($: EngineInterface, specs: () => LoadSpec[], hook
     } catch {
       return false
     }
+  }
+
+  // A `logged-out` answer to a request from before a new login says nothing about the new session. Each
+  // login writes the CLI configuration file: one newer than the claim of the load is such a login.
+  async function isFromBeforeLogin(outcome: Outcome, claimedAt: number): Promise<boolean> {
+    if (outcome.ok || outcome.kind !== 'logged-out') return false
+    const writtenAt = await cliConfigModifiedAt($)
+    return writtenAt !== null && writtenAt > claimedAt
   }
 
   async function recordServerError(spec: LoadSpec, at: number, url: string): Promise<void> {

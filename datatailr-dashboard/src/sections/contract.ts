@@ -85,6 +85,8 @@ export interface Section<Data> {
   logFor?(route: Route, data: Data): LogRequest | null
   render(ui: UiCtx, view: SectionView<Data>, act: SectionActions): RenderElement
   attention?(summary: Summary): number
+  /** The drawing needs the summary: while its first load failed, the shell shows that error in place of the section. */
+  needsSummary?: boolean
   // Text for Claude, added to the person's next message while `shareContext` is on. It holds no log
   // line, and quotes at most the first line of an error, labeled as job output.
   describe?(view: SectionView<Data>): string | null

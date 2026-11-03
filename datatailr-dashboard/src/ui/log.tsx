@@ -24,6 +24,8 @@ export function LogView(
     stream: 'stdout' | 'stderr'
     follow: boolean
     canFollow: boolean
+    /** False for a log that is read whole, such as a build log: no "Load more". */
+    canMore?: boolean
     onStream(s: 'stdout' | 'stderr'): void
     onMore(): void
     onFollow(on: boolean): void
@@ -37,7 +39,7 @@ export function LogView(
       <Box flexWrap="wrap" gap={1}>
         <Button key="stdout" label="stdout" variant={p.stream === 'stdout' ? 'primary' : undefined} onPress={() => p.onStream('stdout')} />
         <Button key="stderr" label="stderr" variant={p.stream === 'stderr' ? 'primary' : undefined} onPress={() => p.onStream('stderr')} />
-        <Button key="more" label="Load more" onPress={p.onMore} />
+        {p.canMore === false ? null : <Button key="more" label="Load more" onPress={p.onMore} />}
         {p.canFollow ? (
           <Button
             key="follow"

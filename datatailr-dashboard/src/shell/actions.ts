@@ -21,6 +21,7 @@ import {
   type SessionState,
   addInstallation,
   cancelLogin,
+  hasCli,
   installationsFor,
   switchTo,
   syncSession,
@@ -205,18 +206,24 @@ export function createActions($: EngineInterface, runtime: Runtime): PaneActions
       // The flag is not in `$.state`, so nothing redraws by itself.
       $.ui.invalidate('ui.render')
     },
+    // A login without a CLI changes nothing, and the switcher stays open: the pane says there how to install it.
     async pick(name) {
-      await closeSwitcher()
-      if (name !== installationOf(await readSession($))) await leaveItem()
+      if (await hasCli($, runtime.options)) {
+        await closeSwitcher()
+        if (name !== installationOf(await readSession($))) await leaveItem()
+      }
       await switchTo($, runtime.options, name)
     },
     async add(url) {
-      await closeSwitcher()
-      await leaveItem()
+      runtime.isAddingInstallation = false
+      if (await hasCli($, runtime.options)) {
+        await closeSwitcher()
+        await leaveItem()
+      }
       await addInstallation($, runtime.options, url)
     },
     async loginAgain() {
-      await closeSwitcher()
+      if (await hasCli($, runtime.options)) await closeSwitcher()
       await loginTo(await readSession($))
     },
     async cancelLogin() {

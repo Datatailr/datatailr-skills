@@ -48,6 +48,7 @@ export type LogState = {
   job: string
   env: string
   runId?: number
+  build?: boolean
   stream: 'stdout' | 'stderr'
   lines: number
   follow: boolean
@@ -69,9 +70,13 @@ export type ContractMatchesTypes = [
   MustBeTrue<Same<Declared['explain'], Record<string, ExplainState>>>,
   MustBeTrue<Same<Declared['log'], LogState>>,
   MustBeTrue<Same<Declared['switcherOpen'], boolean>>,
+  MustBeTrue<Same<Declared['cliMissing'], boolean>>,
   MustBeTrue<Same<Declared['lastContext'], string | null>>,
   MustBeTrue<
-    Same<keyof Declared, 'route' | 'session' | 'loads' | 'confirm' | 'explain' | 'log' | 'switcherOpen' | 'lastContext'>
+    Same<
+      keyof Declared,
+      'route' | 'session' | 'loads' | 'confirm' | 'explain' | 'log' | 'switcherOpen' | 'cliMissing' | 'lastContext'
+    >
   >,
 ]
 
@@ -83,6 +88,7 @@ const INITIAL = {
   explain: {},
   log: null,
   switcherOpen: false,
+  cliMissing: false,
   lastContext: null,
 } as const satisfies PluginState['datatailr-dashboard']
 
@@ -98,6 +104,7 @@ export const switcherOpenAtom = atom(
   { plugin: 'datatailr-dashboard', key: 'switcherOpen' } as const,
   INITIAL.switcherOpen,
 )
+export const cliMissingAtom = atom({ plugin: 'datatailr-dashboard', key: 'cliMissing' } as const, INITIAL.cliMissing)
 export const lastContextAtom = atom({ plugin: 'datatailr-dashboard', key: 'lastContext' } as const, INITIAL.lastContext)
 
 // Function declarations on purpose: past an import, the validator follows `$` only into those, not into
@@ -198,6 +205,17 @@ export function writeSwitcherOpen($: StateDollar, value: boolean): Promise<boole
 }
 export function updateSwitcherOpen($: StateDollar, change: (value: boolean) => boolean): Promise<boolean> {
   return update($, switcherOpenAtom, change)
+}
+
+// True after a login found no CLI, until a login finds one: the pane then says how to install it.
+export function readCliMissing($: StateDollar): Promise<boolean> {
+  return read($, cliMissingAtom)
+}
+export function writeCliMissing($: StateDollar, value: boolean): Promise<boolean> {
+  return update($, cliMissingAtom, () => value)
+}
+export function updateCliMissing($: StateDollar, change: (value: boolean) => boolean): Promise<boolean> {
+  return update($, cliMissingAtom, change)
 }
 
 export function readLastContext($: StateDollar): Promise<string | null> {

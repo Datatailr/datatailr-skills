@@ -9,6 +9,7 @@
  *************************************************************************/
 
 import type { Api, Params } from './api'
+import { buildLogText } from './build-log'
 import type {
   ActionRequest,
   BlobEntry,
@@ -50,7 +51,11 @@ export interface Endpoints {
   budgets: { list(): Promise<Budget[]> }
   tags: { get(name: string): Promise<string> }
   blobs: { list(bucketPath: string): Promise<BlobEntry[]>; get(bucket: string, file: string): Promise<string> }
-  logs: { read(q: { job: string; env: string; runId?: number; stream: 'stdout' | 'stderr'; lines: number }): Promise<string> }
+  logs: {
+    read(q: { job: string; env: string; runId?: number; stream: 'stdout' | 'stderr'; lines: number }): Promise<string>
+    // The build log of the job, whole, as text (`job get` with `build-logs`).
+    build(q: { job: string; env: string; stream: 'stdout' | 'stderr' }): Promise<string>
+  }
   act(a: ActionRequest, url: string): Promise<void>
 }
 
@@ -387,6 +392,10 @@ export function createEndpoints(api: Api): Endpoints {
         }
         const result = await api.call<unknown>('log', 'read', params, 'GET')
         return typeof result === 'string' ? result : ''
+      },
+      async build(q) {
+        const params: Params = { job_name: q.job, environment: q.env, 'build-logs': q.stream }
+        return buildLogText(text(await api.call<unknown>('job', 'get', params, 'GET')))
       },
     },
     async act(a, url) {

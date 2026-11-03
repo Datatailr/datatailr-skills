@@ -72,8 +72,18 @@ export function assistOf(detail: ComputeDetail, installation: string, url: strin
     job.built ? 'the last build succeeded' : 'the last build failed',
   ].join(', ')
 
+  // A job in one state fails again with a new run, a new version or a new build: the key names them,
+  // so that Explain reads the new facts and the new log.
+  const newest = detail.recent[0]
+  const identity = [
+    job.state,
+    `v${job.version}`,
+    job.built ? 'built' : 'build-failed',
+    newest === undefined ? 'no-run' : `run-${newest.id}`,
+  ].join(':')
+
   return {
-    key: explainKey(url, { kind: 'job', id: `${job.env}:${job.name}` }, job.state),
+    key: explainKey(url, { kind: 'job', id: `${job.env}:${job.name}` }, identity),
     canExplain: FAILED_STATES.has(job.state) || !job.built,
     input: () => ({ facts, error: '', logTail: logTail() }),
     draft: () =>

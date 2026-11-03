@@ -64,11 +64,12 @@ export function installationName(url: string): string {
   return host.replace(/[^A-Za-z0-9._-]/g, '_')
 }
 
+// Windows has no `HOME` as a rule: its home folder is `USERPROFILE`.
 export async function resolveHome($: EngineInterface, path: string): Promise<string> {
   if (path !== '~' && !path.startsWith('~/')) return path
-  const home = await $.env.get('HOME')
+  const home = (await $.env.get('HOME')) || (await $.env.get('USERPROFILE'))
   if (!home) throw new Error('HOME is not set')
-  return home.replace(/\/+$/, '') + path.slice(1)
+  return home.replace(/[\\/]+$/, '') + path.slice(1)
 }
 
 export async function listInstallations($: EngineInterface, dir: string): Promise<Installation[]> {
@@ -103,23 +104,35 @@ export async function readInstallationEnv($: EngineInterface, inst: Installation
 export class InstallationExistsError extends Error {
   readonly installation: string
   readonly file: string
+  /** The address in the file, or null when the file cannot be read or holds no valid one. */
+  readonly url: string | null
 
-  constructor(installation: string, file: string) {
+  constructor(installation: string, file: string, url: string | null) {
     super(`Installation ${installation} already exists`)
     this.name = 'InstallationExistsError'
     this.installation = installation
     this.file = file
+    this.url = url
   }
 }
 
-// Never overwrites: an existing env file can hold hand-written settings.
+// Never overwrites: an existing env file can hold hand-written settings. The name comes from the host
+// alone, so the file may name another address (`http://` where `https://` was typed): the error says which.
 export async function writeInstallation($: EngineInterface, dir: string, url: string): Promise<Installation> {
   const normalized = normalizeUrl(url)
   const name = installationName(normalized)
   const file = `${dir.replace(/\/+$/, '')}/${name}${ENV_SUFFIX}`
-  if (await $.fs.exists(file)) throw new InstallationExistsError(name, file)
+  if (await $.fs.exists(file)) throw new InstallationExistsError(name, file, await urlInFile($, file))
   await $.fs.write(file, `DATATAILR_BASE_URL=${normalized}\n`)
   return { name, url: normalized, userName: null, hasPassword: false, file }
+}
+
+async function urlInFile($: EngineInterface, file: string): Promise<string | null> {
+  try {
+    return normalizeUrl(parseEnvFile(await $.fs.read(file)).DATATAILR_BASE_URL ?? '')
+  } catch {
+    return null
+  }
 }
 
 // Each login writes the CLI configuration file, so a newer time means a new session.

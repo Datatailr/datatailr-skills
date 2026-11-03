@@ -212,6 +212,7 @@ export const launcher: Section<Workstation[]> = {
   // One load for every route: the workstation templates. Apps, services, add-ins and runs come from the summary.
   loadKey: () => 'launcher',
   load: api => api.workstations.list(),
+  needsSummary: true,
 
   render(ui, view, act) {
     const { Box } = ui.els

@@ -55,6 +55,7 @@ declare module 'claude-code' {
         job: string
         env: string
         runId?: number
+        build?: boolean
         stream: 'stdout' | 'stderr'
         lines: number
         follow: boolean
@@ -63,6 +64,7 @@ declare module 'claude-code' {
         error?: string
       } | null
       switcherOpen: boolean
+      cliMissing: boolean
       lastContext: string | null
     }
   }

@@ -43,10 +43,15 @@ function fit(text: string, width: number): string {
   return truncate(text, width).replaceAll(' ', NBSP)
 }
 
+function safeKey(key: string): string {
+  return key.replace(/%/g, '%25').replace(/:/g, '%3A')
+}
+
 // Columns line up because every cell is a Box of the column's fixed width: the text never sets it, so
 // the font of a surface does not matter. A Button may hold only text, so each cell is its own plain
 // Button, and the cells of a row share a hover group to light as one. A `rowKey` must not be `prev`,
-// `next` or `sort-<id>`.
+// `next` or `sort-<id>`. It may hold any other character, such as a blob name with `:`: its `%` and
+// `:` are escaped, so that `<key>:<column>` and `<key>:row` of one row never spell the key of another.
 export function Table<Row>(
   ui: UiCtx,
   p: {
@@ -96,7 +101,7 @@ export function Table<Row>(
   })
 
   const rows = p.rows.slice(0, PAGE_SIZE).map(row => {
-    const key = p.rowKey(row)
+    const key = safeKey(p.rowKey(row))
     const scope = `row:${key}`.slice(0, SCOPE_LIMIT)
 
     return (

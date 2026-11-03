@@ -115,6 +115,7 @@ function Detail(ui: UiCtx, view: SectionView<DetailData>, detail: ComputeDetail,
         follow: log?.follow ?? false,
         // A followed log keeps its toggle after its item stops, so that it can be turned off.
         canFollow: canFollow(detail) || (log?.follow ?? false),
+        canMore: log?.build !== true,
         onStream: act.log.stream,
         onMore: act.log.more,
         onFollow: act.log.follow,

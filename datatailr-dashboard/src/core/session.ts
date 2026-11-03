@@ -23,7 +23,7 @@ import {
   writeInstallation,
 } from './installations'
 import { type LoginFailure, type LoginOutcome, findCli, loginWithDevice, loginWithPassword } from './login'
-import { readSession, updateSession, writeSession } from './state'
+import { readCliMissing, readSession, updateSession, writeCliMissing, writeSession } from './state'
 
 export type SessionState =
   | { kind: 'no-cli' }
@@ -34,6 +34,7 @@ export type SessionState =
   | { kind: 'error'; installation: string | null; message: string }
 
 type LoggingIn = Extract<SessionState, { kind: 'logging-in' }>
+type Dashboard = Extract<SessionState, { kind: 'connected' | 'expired' }>
 
 const DEFAULT_INSTALLATIONS_DIR = '~/.datatailr/installations'
 const MFA_NOTE = 'Password login needs MFA on this installation. Approve the login in your browser.'
@@ -84,8 +85,8 @@ export async function switchTo($: EngineInterface, options: PluginOptions, name:
   running = login
   let result: SessionState | null = null
   try {
-    login.before ??= await readSession($)
-    result = await runLogin($, options, name, login.controller.signal, started.resolve)
+    const before = (login.before ??= await readSession($))
+    result = await runLogin($, options, name, before, login.controller.signal, started.resolve)
     return result
   } finally {
     // A write that the host refused must not leave the pane logging in.
@@ -123,6 +124,7 @@ async function runLogin(
   $: EngineInterface,
   options: PluginOptions,
   name: string,
+  before: SessionState,
   signal: AbortSignal,
   report: (state: SessionState) => void,
 ): Promise<SessionState> {
@@ -136,15 +138,22 @@ async function runLogin(
   if (installation === undefined) {
     return ended({ kind: 'error', installation: name, message: `Unknown installation ${name}.` })
   }
-  const cli = await findCli($, cliPathOption(options))
+  const cli = await cliForLogin($, options)
   if (signal.aborted) return readSession($)
-  if (cli === null) return ended({ kind: 'no-cli' })
+  if (cli === null) {
+    // A dashboard stays, and the pane says how to install the CLI where the login was offered. A login
+    // that this one replaced leaves its state behind: the state before it comes back.
+    if (!isDashboard(before)) return ended({ kind: 'no-cli' })
+    const kept = await updateSession($, current => (current.kind === 'logging-in' ? before : current))
+    report(kept)
+    return kept
+  }
 
   const method = installation.userName !== null && installation.hasPassword ? 'password' : 'device'
   const first: LoggingIn = { kind: 'logging-in', installation: installation.name, method }
   report(await setSession($, first))
 
-  const before = await readCliSession($)
+  const cliBefore = await readCliSession($)
 
   let outcome: LoginOutcome
   if (method === 'password') {
@@ -166,9 +175,9 @@ async function runLogin(
 
   // The CLI can fail after it saved the session (while it sets up its `dt` shim), so a failed login
   // still counts when the CLI holds a new session for this installation.
-  const after = await readCliSession($)
-  const isForInstallation = after !== null && after.url === installation.url
-  if (isForInstallation && (outcome.ok || after.jwt !== before?.jwt)) {
+  const cliAfter = await readCliSession($)
+  const isForInstallation = cliAfter !== null && cliAfter.url === installation.url
+  if (isForInstallation && (outcome.ok || cliAfter.jwt !== cliBefore?.jwt)) {
     return setSession($, { kind: 'connected', installation: installation.name, url: installation.url })
   }
   return setSession($, {
@@ -180,8 +189,9 @@ async function runLogin(
 
 export async function addInstallation($: EngineInterface, options: PluginOptions, url: string): Promise<SessionState> {
   const refuse = (message: string) => (running !== null ? readSession($) : fail($, message))
+  let normalized: string
   try {
-    normalizeUrl(url)
+    normalized = normalizeUrl(url)
   } catch (error) {
     return refuse(error instanceof Error ? error.message : 'Not a valid http(s) address')
   }
@@ -196,6 +206,13 @@ export async function addInstallation($: EngineInterface, options: PluginOptions
     name = (await writeInstallation($, dir, url)).name
   } catch (error) {
     if (!(error instanceof InstallationExistsError)) return refuse(`Could not save the installation file in ${dir}.`)
+    // The file of that name is reused only for the address it names: a login to another one would surprise.
+    if (error.url === null) {
+      return refuse(`Installation ${error.installation} already exists, and ${error.file} has no valid address. Edit the file.`)
+    }
+    if (error.url !== normalized) {
+      return refuse(`Installation ${error.installation} already exists for ${error.url}. Edit ${error.file}, or add that address instead.`)
+    }
     name = error.installation
   }
   return switchTo($, options, name)
@@ -282,6 +299,19 @@ function cliPathOption(options: PluginOptions): string {
   return typeof value === 'string' ? value : ''
 }
 
+/** Whether a login can run: only a login needs the CLI. A pane without one reads the platform all the same. */
+export async function hasCli($: EngineInterface, options: PluginOptions): Promise<boolean> {
+  return (await findCli($, cliPathOption(options))) !== null
+}
+
+// `cliMissing` tells the pane to say how to install the CLI where the login was offered, until a login finds one.
+async function cliForLogin($: EngineInterface, options: PluginOptions): Promise<string | null> {
+  const cli = await findCli($, cliPathOption(options))
+  const isMissing = cli === null
+  if ((await readCliMissing($)) !== isMissing) await writeCliMissing($, isMissing)
+  return cli
+}
+
 async function installationsDir($: EngineInterface, options: PluginOptions): Promise<string> {
   return resolveHome($, installationsDirOption(options))
 }
@@ -294,13 +324,16 @@ async function listAll($: EngineInterface, options: PluginOptions): Promise<Inst
   }
 }
 
+// The session of the CLI file is all a pane needs: the data comes over HTTP. The CLI itself is for the logins.
 async function observeSession($: EngineInterface, options: PluginOptions): Promise<SessionState> {
-  const cli = await findCli($, cliPathOption(options))
-  if (cli === null) return { kind: 'no-cli' }
   const session = await readCliSession($)
-  if (session === null) return { kind: 'disconnected' }
+  if (session === null) return (await hasCli($, options)) ? { kind: 'disconnected' } : { kind: 'no-cli' }
   const match = (await listAll($, options)).find(installation => installation.url === session.url)
   return { kind: 'connected', installation: match?.name ?? installationName(session.url), url: session.url }
+}
+
+function isDashboard(state: SessionState): state is Dashboard {
+  return state.kind === 'connected' || state.kind === 'expired'
 }
 
 // A sync keeps these: a browser login must keep its link on screen, and the user leaves an error by acting.

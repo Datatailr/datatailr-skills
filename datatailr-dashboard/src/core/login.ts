@@ -44,6 +44,8 @@ const ESCAPE = /\u001b\[[0-?]*[ -/]*[@-~]/g
 const CONTROLS = /[\u0000-\u001f\u007f]+/g
 const STEP_LINES = [MARKER_LINE, 'Waiting for authorization...']
 
+// Windows separates `PATH` with `;` and names the executable `datatailr.exe`. `OS` is `Windows_NT` on
+// every Windows, and unset elsewhere.
 export async function findCli($: EngineInterface, cliPath: string): Promise<string | null> {
   const named = cliPath.trim()
   if (named !== '') {
@@ -54,10 +56,15 @@ export async function findCli($: EngineInterface, cliPath: string): Promise<stri
       return null
     }
   }
-  for (const folder of ((await $.env.get('PATH')) ?? '').split(':')) {
+  const isWindows = (await $.env.get('OS')) === 'Windows_NT'
+  const names = isWindows ? [`${CLI_NAME}.exe`, CLI_NAME] : [CLI_NAME]
+  const trailing = isWindows ? /[\\/]+$/ : /\/+$/
+  for (const folder of ((await $.env.get('PATH')) ?? '').split(isWindows ? ';' : ':')) {
     if (folder === '') continue
-    const path = `${folder.replace(/\/+$/, '')}/${CLI_NAME}`
-    if (await $.fs.exists(path)) return path
+    for (const name of names) {
+      const path = `${folder.replace(trailing, '')}/${name}`
+      if (await $.fs.exists(path)) return path
+    }
   }
   return null
 }

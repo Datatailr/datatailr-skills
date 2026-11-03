@@ -16,7 +16,8 @@ import { isPaneShown } from './panes'
 import type { SessionState } from './session'
 import { type LogState, readLog, readSession, updateLog, writeLog } from './state'
 
-export type LogRequest = { job: string; env: string; runId?: number }
+// `build`: the build log of the job, whole, instead of a run's log.
+export type LogRequest = { job: string; env: string; runId?: number; build?: boolean }
 
 export type LogQuery = LogRequest & { stream: 'stdout' | 'stderr'; lines: number; follow: boolean }
 
@@ -27,7 +28,7 @@ const UNREADABLE = 'The log could not be read.'
 
 // Two installations can have the same job and run id, so the key starts with the installation.
 export function logKey(url: string, request: LogRequest): string {
-  return `${url} ${request.job}:${request.env}:${request.runId ?? 'latest'}`
+  return `${url} ${request.job}:${request.env}:${request.build === true ? 'build' : (request.runId ?? 'latest')}`
 }
 
 export function sessionUrl(session: SessionState): string {
@@ -83,13 +84,16 @@ export function createLogReader($: EngineInterface, endpoints: Endpoints): LogRe
     let text: string | null = null
     let error = UNREADABLE
     try {
-      text = await endpoints.logs.read({
-        job: log.job,
-        env: log.env,
-        ...(log.runId === undefined ? {} : { runId: log.runId }),
-        stream: log.stream,
-        lines: log.lines,
-      })
+      text =
+        log.build === true
+          ? await endpoints.logs.build({ job: log.job, env: log.env, stream: log.stream })
+          : await endpoints.logs.read({
+              job: log.job,
+              env: log.env,
+              ...(log.runId === undefined ? {} : { runId: log.runId }),
+              stream: log.stream,
+              lines: log.lines,
+            })
     } catch (failure) {
       // Only an `ApiError` message is safe to show: it never holds the cookie.
       if (failure instanceof ApiError && failure.message !== '') error = `${UNREADABLE} ${failure.message}`
@@ -124,6 +128,7 @@ export function createLogReader($: EngineInterface, endpoints: Endpoints): LogRe
           job: q.job,
           env: q.env,
           ...(q.runId === undefined ? {} : { runId: q.runId }),
+          ...(q.build === true ? { build: true } : {}),
           stream: q.stream,
           lines: q.lines,
           follow: q.follow,

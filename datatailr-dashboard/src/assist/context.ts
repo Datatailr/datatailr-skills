@@ -52,9 +52,6 @@ export async function contextFor($: EngineInterface, host: ContextHost): Promise
   if (!(await isPaneShown($))) return null
 
   const route = await readRoute($)
-  const key = `${session.url} ${routeKey(route)}`
-  if ((await readLastContext($)) === key) return null
-
   const section = currentSection(host.sections, route)
   if (section === null) return null
 
@@ -81,7 +78,12 @@ export async function contextFor($: EngineInterface, host: ContextHost): Promise
   } catch {
     // A section whose description fails still names itself.
   }
+  const block = contextBlock(session.installation, section.title, described)
+  // The same block on the same route says nothing new. A block holds no time, so a page whose data stays
+  // sends it once, and one whose data changed (a run that failed, an item that loaded) sends it again.
+  const key = `${session.url} ${routeKey(route)}\n${block}`
+  if ((await readLastContext($)) === key) return null
   await writeLastContext($, key)
 
-  return contextBlock(session.installation, section.title, described)
+  return block
 }

@@ -31,8 +31,9 @@ The pane has eight sections:
   and budgets.
 - **Compute Processes.** Tabs for Runs, Workflows, Apps, Services and Excel add-ins,
   with filters, a name search and 50 rows on each page. A press on a row opens
-  a detail page with the facts, the error, the recent runs, the log, a link to
-  the same item in the web GUI, and the safe actions (see below).
+  a detail page with the facts, the error, the recent runs, the log (the build
+  log, for a job whose last build failed), a link to the same item in the web
+  GUI, and the safe actions (see below).
 - **Nodes.** Each node with its environment, class, type, state, CPU and memory
   use, and price per hour. A node page lists the runs on the node and its tags.
 - **User Manager.** Users with their groups and state, and groups with their
@@ -54,10 +55,21 @@ pane draws without the timeline chart.
 
 - A local Claude Code session, in the desktop app (the Code tab) or in the
   terminal. A pane needs a local session.
-- The `datatailr` CLI. Install it with `pip install datatailr`. The CLI must be
-  on the `PATH` of the Claude process. If it is somewhere else, set the
-  `cliPath` option. If the plugin finds no CLI, the pane tells you how to
-  install it.
+- A session of the `datatailr` CLI, to watch an installation. The pane reads
+  the platform with the session that `datatailr login` saves in
+  `~/.dt/remote_client/remote_client.cfg`. The pane needs no CLI for this. A
+  login from a virtual environment is enough.
+- The `datatailr` CLI, to log in from the pane. Install it with
+  `pip install datatailr`. A pick in the switcher, "Add installation" and "Log
+  in again" run the CLI. For them, the CLI must be on the `PATH` of the Claude
+  process. If it is somewhere else, set the `cliPath` option. The plugin is
+  tested on macOS and Linux. On Windows, it looks for `datatailr.exe` in the
+  folders of `PATH`, and reads your home folder from `USERPROFILE` when `HOME`
+  is not set. If the plugin
+  finds no CLI for a login, the pane tells you how to install it. It says so
+  where you asked for the login: in the switcher, or under the bar that says
+  your session ended. With no session and no CLI, the pane only tells you how
+  to install it.
 - A Datatailr installation and an account on it.
 - Claude Code 2.1.299 or later.
 
@@ -109,12 +121,18 @@ The pane never asks for a password.
 ## First start
 
 If there is no env file and no CLI session, the pane shows one input for the
-URL of your installation. Type the URL and press Enter. The plugin then does
-these steps:
+URL of your installation. If there is also no CLI, the pane tells you how to
+install it instead. Type the URL and press Enter. The plugin then does these
+steps:
 
 1. It saves an env file with only `DATATAILR_BASE_URL`, named after the host.
 2. It starts the browser login and shows the link.
 3. After you approve the login, it loads the dashboard.
+
+The file is named after the host. If a file of that name exists for the same
+address, the plugin logs in to it. If it names another address, for example
+`http://` where you typed `https://`, the pane says so and writes nothing. Edit
+the file, or type the address it names.
 
 To log in without the browser next time, add `DATATAILR_USER_NAME` and
 `DATATAILR_USER_PASSWORD` to that file, then run `chmod 600` on it.
@@ -136,11 +154,16 @@ The plugin follows the CLI. If you run `datatailr login` for another
 installation in a terminal, the pane moves to it within about 30 seconds, and
 closes the page that is open. Until then, the pane sends no request, because
 the CLI is on another installation than the pane shows. If that installation
-has no env file, the switcher shows its host name.
+has no env file, the switcher shows its host name. The pane reads the session
+file of the CLI, not the CLI itself. So this also works with a CLI that is not
+on the `PATH` of Claude, for example one in a virtual environment.
 
 If the platform ends your session, the pane keeps the old data and shows "Your
 session ended" with a "Log in again" button. Until you log in again, a detail
-page shows no Start, Stop or Rerun button.
+page shows no Start, Stop or Rerun button. If the plugin finds no CLI when you
+press the button, the bar tells you how to install it. You can also log in
+from a terminal. The pane then follows the new session within about 30
+seconds.
 
 ## Options
 
@@ -153,7 +176,8 @@ Code.
 | `cliPath`          | empty                         | Path to the `datatailr` CLI. Empty means search the `PATH` of Claude         |
 | `shareContext`     | `true`                        | Let Claude see a short summary of what the pane shows                        |
 
-If you set `cliPath`, the plugin uses only that path and does not search `PATH`.
+The plugin runs the CLI only for a login from the pane. If you set `cliPath`,
+the plugin uses only that path and does not search `PATH`.
 
 ## Commands
 
@@ -200,17 +224,19 @@ to the web GUI or "Ask Claude" for them.
 - **Explain.** On the page of a run or a job that has an error or a failed state,
   this asks a small model (`haiku`) for a short likely cause and one next step.
   It shows once the log of the page has loaded. It calls the model only when
-  you press it. It sends the facts of the item,
-  the error and the last 60 log lines. Before it sends them, it removes common
+  you press it. It sends the facts of the item, the error and the last 60
+  lines of the log of the page, which is the build log for a job whose last
+  build failed. Before it sends them, it removes common
   secret patterns (tokens, cookies, passwords in URLs, flags and `key=value`
   pairs). It cannot recognise every secret. The same item in the same state
-  costs nothing a second time. "Continue in chat" puts the answer in the
-  message box.
+  costs nothing a second time. For a job, a new run, a new version or a new
+  build is a new state. "Continue in chat" puts the answer in the message box.
 - **Context.** While the pane is shown and the session is connected, the next
   message you type carries a short block about what the pane shows: the
-  installation, the section and its page. It adds the block once for each
-  installation and route. The block has at most 1,500 characters and no log
-  line. What it quotes from a job (an error) is one line, labeled as job
+  installation, the section and its page. It adds the block when the
+  installation, the page or what the page says changed since the last block,
+  for example when a run failed. The block has at most 1,500 characters and no
+  log line. What it quotes from a job (an error) is one line, labeled as job
   output. The plugin removes common secret patterns here too. A dim line at
   the bottom of a detail page says what Claude can see. To turn the context
   off, set `shareContext` to `false`.

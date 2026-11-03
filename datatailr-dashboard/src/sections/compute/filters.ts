@@ -43,9 +43,10 @@ export const JOB_CHIPS = [ALL, 'running', 'stopped']
 export const RUN_TYPES = ['batch', 'app', 'service', 'excel']
 export const ENVIRONMENTS = ['dev', 'pre', 'prod']
 
-const NEEDS_QUOTES = /^$|[\s()[\],"\\]/
+// The server reads a value that starts with `'` or `"` as a quoted one, so a single quote needs the quotes too.
+const NEEDS_QUOTES = /^$|[\s()[\],"'\\]/
 
-/** A value in the filter language of `dt view get`, quoted as the web GUI quotes it. */
+/** A value in the filter language of `dt view get`, quoted as the web GUI quotes it, plus a single quote. */
 export function dslValue(value: string): string {
   return NEEDS_QUOTES.test(value) ? `"${value.replace(/[\\"]/g, '\\$&')}"` : value
 }

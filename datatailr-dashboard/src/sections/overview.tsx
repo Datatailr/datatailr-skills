@@ -288,6 +288,8 @@ export const overview: Section<OverviewData> = {
     }
   },
 
+  needsSummary: true,
+
   render(ui, view, act) {
     const { Box, Text } = ui.els
     const { summary } = view

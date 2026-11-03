@@ -55,14 +55,22 @@ export function confirmOf(action: JobAction): { question: string; yesLabel: stri
   }
 }
 
+/** A job whose last build failed shows its build log: the failure is there, not in a run. */
+export const needsBuildLog = (detail: ComputeDetail): boolean => detail.kind === 'job' && !detail.job.built
+
+// A job page shows the log of its newest recent run, so that a new run opens its own log. With no
+// recent run, the platform picks the latest one.
 export function logRequestOf(detail: ComputeDetail): LogRequest {
-  return detail.kind === 'run'
-    ? { job: detail.run.job, env: detail.run.env, runId: detail.run.id }
-    : { job: detail.job.name, env: detail.job.env }
+  if (detail.kind === 'run') return { job: detail.run.job, env: detail.run.env, runId: detail.run.id }
+  if (needsBuildLog(detail)) return { job: detail.job.name, env: detail.job.env, build: true }
+  const newest = detail.recent[0]
+
+  return { job: detail.job.name, env: detail.job.env, ...(newest === undefined ? {} : { runId: newest.id }) }
 }
 
+// A build log is whole and done: there is nothing to follow.
 export function canFollow(detail: ComputeDetail): boolean {
-  return subjectOf(detail).state === 'running'
+  return subjectOf(detail).state === 'running' && !needsBuildLog(detail)
 }
 
 const segment = encodeURIComponent

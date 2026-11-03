@@ -12,7 +12,7 @@ import type { RenderElement } from 'claude-code'
 
 import type { Installation } from '../core/installations'
 import type { UiCtx } from '../ui/ctx'
-import { UrlInput } from './screens'
+import { InstallCli, UrlInput } from './screens'
 
 export function SwitcherButton(ui: UiCtx, p: { installation: string | null; onPress(): void }): RenderElement {
   const { Button } = ui.els
@@ -28,6 +28,7 @@ export function SwitcherList(
     canAdd: boolean
     isAdding: boolean
     canLoginAgain: boolean
+    isCliMissing: boolean
     onPick(name: string): void
     onShowAdd(): void
     onAdd(url: string): void
@@ -50,6 +51,7 @@ export function SwitcherList(
   if (p.canLoginAgain && p.current !== null) {
     items.push(<Button key="login-again" label="Log in again" plain onPress={p.onLoginAgain} />)
   }
+  if (p.isCliMissing) items.push(InstallCli(ui))
 
   return (
     <Box flexDirection="column" alignItems="flex-end">
