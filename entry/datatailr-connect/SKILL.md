@@ -44,10 +44,10 @@ If the `datatailr-*` skills are already available to you, skip this step.
 Otherwise, from inside the project directory, run:
 
 ```bash
-.venv/bin/python -m datatailr setup-skills --agent <agent> --force
+.venv/bin/python -m datatailr setup-skills --force
 ```
 
-Replace `<agent>` with `claude`, `codex` or `cursor`, the agent you are running as. The command copies the `datatailr-*` skills into the skills folder of that agent.
+The command installs the `datatailr-*` skills into `./.agents/skills`, which Codex, Cursor and Copilot read, and links them from `./.claude/skills` for Claude Code. On Windows without Developer Mode it copies them into `.claude\skills` instead and says so.
 
 ## 3. Log in with device login
 
@@ -59,7 +59,7 @@ Then check whether the user is already logged in to that installation. The CLI k
 .venv/bin/python -c 'import json, os; print(json.load(open(os.path.expanduser("~/.dt/remote_client/remote_client.cfg"))).get("base_url", ""))'
 ```
 
-Compare it with the URL you found. Ignore a trailing slash and the case of the host. Add `https://` to the URL you found when the user gave no scheme, because the CLI saves the URL with it. If the file is missing or the URLs differ, continue with the login.
+Compare it with the URL you found. Ignore a trailing slash and the case of the host. If the user gave no scheme, add `https://` to the URL you found, because the CLI saves the URL with it. If the file is missing or the URLs differ, continue with the login.
 
 If the URLs match, install the CLI without a login. `.venv/bin/dt` exists only after a login or `setup-cli`, so in a new project the next check cannot work without this command:
 
@@ -75,7 +75,7 @@ Then run the check. It keeps the user list out of the conversation:
 
 If it prints `logged-in`, the user is logged in to that installation, so skip the rest of this step. If it fails, continue with the login.
 
-**The whole login happens in ONE response.** When your turn ends, background processes stop. If you end your turn after you share the link, the approval reaches nothing and the login silently fails.
+**The whole login happens in ONE response.** If your turn ends, background processes stop. If you end your turn after you share the link, the approval reaches nothing and the login silently fails.
 
 Start the login **in the background**. It blocks while it polls for approval, for up to 15 minutes:
 
@@ -83,7 +83,7 @@ Start the login **in the background**. It blocks while it polls for approval, fo
 DATATAILR_BASE_URL="<base-url>" .venv/bin/python -m datatailr login --device --url "<base-url>" > .dt-login.log 2>&1 &
 ```
 
-The SDK lets `DATATAILR_BASE_URL` override `--url`. A URL that the user exported in the shell could send the login to another installation, so the command sets the variable to the right URL.
+The SDK lets `DATATAILR_BASE_URL` override `--url`. A URL that the user exported in the shell can send the login to another installation, so the command sets the variable to the right URL.
 
 Then, without ending the turn:
 
@@ -106,8 +106,7 @@ If the `datatailr-dashboard` plugin is installed, give the user the absolute pat
 
 ## Troubleshooting
 
-- **`setup-skills` fails with a permissions error**: confirm you are inside the project subdirectory from step 0, not the workspace root.
-- **`setup-skills: error: unrecognized arguments: --agent`**: the installed `datatailr` predates the flag. Run `.venv/bin/python -m pip install --upgrade datatailr` and try again. If that does not help, run the command without `--agent` and tell the user where the skills went.
+- **`setup-skills` fails with a permissions error**: make sure that you are inside the project subdirectory from step 0, not the workspace root.
 - **`login: error: unrecognized arguments: --device`**: the installed `datatailr` predates device login. Run `.venv/bin/python -m pip install --upgrade datatailr`. If that does not help, tell the user their package version does not support device login yet.
 - **"Datatailr base URL is required for device login"**: pass `--url` or set `DATATAILR_BASE_URL`.
 - **"Device authorization request expired" or "timed out"**: the user did not approve within 15 minutes. Start the login again and share the new link.
