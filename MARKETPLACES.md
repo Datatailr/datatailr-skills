@@ -43,10 +43,14 @@ questions, answer for each plugin.
 - **Skills plugin.** Its connect skill downloads the `datatailr` SDK from PyPI.
   Code that the user deploys can reach other services, as the "Data handling"
   section of [README.md](README.md) says. It declares no connector.
-- **Dashboard.** It sends data only to the user's own Datatailr installation,
-  through the `datatailr` CLI session. What it shares with Claude stays inside
-  the Claude session. That is a short summary of the page, and on Explain the
-  facts and the last log lines. It declares no connector.
+- **Dashboard.** It sends platform requests only to the user's own Datatailr
+  installation, through the `datatailr` CLI session. Two features pass data to
+  Claude. "Explain" sends the facts of a run or a job, its error and the last
+  60 lines of its log to the `haiku` model, and only when the user presses it.
+  The pane context adds a short block about what the pane shows, with no log
+  line, to the next message the user types while the pane is shown. The plugin
+  removes common secret patterns from both first, and `shareContext: false`
+  turns the context off. It declares no connector.
 
 The repository catalog enables direct Claude Code installation independently
 of directory approval. Keep the existing brand name; any name-confusion hold
