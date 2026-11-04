@@ -8,6 +8,10 @@
     {
       "name": "datatailr-skills",
       "source": "./"
+    },
+    {
+      "name": "datatailr-dashboard",
+      "source": "./datatailr-dashboard"
     }
   ]
 }

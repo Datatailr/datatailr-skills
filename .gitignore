@@ -8,3 +8,4 @@ dist/
 .env
 .env.*
 !.env.example
+datatailr-dashboard/.claude-plugin/types/
