@@ -1,6 +1,6 @@
 {
   "name": "datatailr-skills",
-  "version": "0.2.13",
+  "version": "0.2.15",
   "description": "Connect to your Datatailr installation, then build, deploy and manage with it. Start with the datatailr-connect skill.",
   "skills": [
     "./skills",
