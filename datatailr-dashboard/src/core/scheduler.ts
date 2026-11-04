@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { EngineInterface } from 'claude-code'
+import type { Engine } from './engine'
 
 import { ApiError, type ErrorKind } from './api'
 import { cliConfigModifiedAt } from './installations'
@@ -45,7 +45,7 @@ export function backoffMs(everyMs: number, failures: number): number {
   return Math.min(everyMs * 2 ** failures, MAX_BACKOFF_MS)
 }
 
-export function startScheduler($: EngineInterface, specs: () => LoadSpec[], hooks: SchedulerHooks = {}): Scheduler {
+export function startScheduler($: Engine, specs: () => LoadSpec[], hooks: SchedulerHooks = {}): Scheduler {
   const syncEveryMs = hooks.syncEveryMs ?? DEFAULT_SYNC_MS
   let isCancelled = false
   let isTicking = false
@@ -267,7 +267,7 @@ function settle(load: LoadState | undefined, spec: LoadSpec, outcome: Outcome, a
   }
 }
 
-async function releaseStale($: EngineInterface): Promise<void> {
+async function releaseStale($: Engine): Promise<void> {
   if (!Object.values(await readLoads($)).some(load => load.inFlight)) return
   await updateLoads($, loads =>
     Object.fromEntries(Object.entries(loads).map(([key, load]) => [key, { ...load, inFlight: false }])),

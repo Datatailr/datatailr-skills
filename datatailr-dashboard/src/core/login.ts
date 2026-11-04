@@ -10,6 +10,8 @@
 
 import type { EngineInterface } from 'claude-code'
 
+import type { Engine } from './engine'
+
 import { normalizeUrl, resolveHome } from './installations'
 
 export type LoginFailure = {
@@ -46,7 +48,7 @@ const STEP_LINES = [MARKER_LINE, 'Waiting for authorization...']
 
 // Windows separates `PATH` with `;` and names the executable `datatailr.exe`. `OS` is `Windows_NT` on
 // every Windows, and unset elsewhere.
-export async function findCli($: EngineInterface, cliPath: string): Promise<string | null> {
+export async function findCli($: Engine, cliPath: string): Promise<string | null> {
   const named = cliPath.trim()
   if (named !== '') {
     try {
@@ -71,7 +73,7 @@ export async function findCli($: EngineInterface, cliPath: string): Promise<stri
 
 // The credentials go to the child through its environment only, never through `argv`.
 export async function loginWithPassword(
-  $: EngineInterface,
+  $: Engine,
   cli: string,
   url: string,
   user: string,
@@ -110,7 +112,7 @@ function leave(stream: SpawnStream): void {
 
 // The CLI prints nothing while the user has not approved, so a read races the abort signal.
 export async function loginWithDevice(
-  $: EngineInterface,
+  $: Engine,
   cli: string,
   url: string,
   onLink: (link: string) => void,

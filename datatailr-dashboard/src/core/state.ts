@@ -8,8 +8,9 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import { atom, read, update } from 'claude-code'
-import type { EngineInterface, PluginState, StateDollar } from 'claude-code'
+import type { PluginState } from 'claude-code'
+
+import type { Engine, StateKey, StateKeyRef, StateValueOf } from './engine'
 
 import type { ErrorKind } from './api'
 import type { ActionRequest } from './model'
@@ -92,45 +93,63 @@ const INITIAL = {
   lastContext: null,
 } as const satisfies PluginState['datatailr-dashboard']
 
-// `claude plugin validate` follows an atom only inside the file that makes it, so other modules use
-// the accessors below and never import an atom (the exports are for the tests).
-export const routeAtom = atom({ plugin: 'datatailr-dashboard', key: 'route' } as const, INITIAL.route)
-export const sessionAtom = atom({ plugin: 'datatailr-dashboard', key: 'session' } as const, INITIAL.session)
-export const loadsAtom = atom({ plugin: 'datatailr-dashboard', key: 'loads' } as const, INITIAL.loads)
-export const confirmAtom = atom({ plugin: 'datatailr-dashboard', key: 'confirm' } as const, INITIAL.confirm)
-export const explainAtom = atom({ plugin: 'datatailr-dashboard', key: 'explain' } as const, INITIAL.explain)
-export const logAtom = atom({ plugin: 'datatailr-dashboard', key: 'log' } as const, INITIAL.log)
-export const switcherOpenAtom = atom(
-  { plugin: 'datatailr-dashboard', key: 'switcherOpen' } as const,
-  INITIAL.switcherOpen,
-)
-export const cliMissingAtom = atom({ plugin: 'datatailr-dashboard', key: 'cliMissing' } as const, INITIAL.cliMissing)
-export const lastContextAtom = atom({ plugin: 'datatailr-dashboard', key: 'lastContext' } as const, INITIAL.lastContext)
+type Cell<K extends StateKey> = { readonly ref: StateKeyRef & { readonly key: K }; readonly initial: StateValueOf<K> }
 
-// Function declarations on purpose: past an import, the validator follows `$` only into those, not into
-// arrow functions. `update` runs `change` again on a version miss, so `change` must have no side effects.
+const cell = <K extends StateKey>(key: K): Cell<K> => ({ ref: { plugin: 'datatailr-dashboard', key }, initial: INITIAL[key] })
 
-export function readRoute($: StateDollar): Promise<Route> {
+// The hooks module names each key in its own `$.state` calls, so the engine can list them. These cells
+// only carry the key and the initial value to the facade (the exports are for the tests).
+export const routeAtom = cell('route')
+export const sessionAtom = cell('session')
+export const loadsAtom = cell('loads')
+export const confirmAtom = cell('confirm')
+export const explainAtom = cell('explain')
+export const logAtom = cell('log')
+export const switcherOpenAtom = cell('switcherOpen')
+export const cliMissingAtom = cell('cliMissing')
+export const lastContextAtom = cell('lastContext')
+
+async function read<K extends StateKey>(engine: Engine, target: Cell<K>): Promise<StateValueOf<K>> {
+  const got = await engine.state.get(target.ref)
+  return got.value === undefined ? target.initial : (got.value as StateValueOf<K>)
+}
+
+// The engine refuses a write whose version is stale: then `change` runs again on the new value, so
+// `change` must have no side effects.
+async function update<K extends StateKey>(
+  engine: Engine,
+  target: Cell<K>,
+  change: (value: StateValueOf<K>) => StateValueOf<K>,
+): Promise<StateValueOf<K>> {
+  for (;;) {
+    const got = await engine.state.get(target.ref)
+    const next = change(got.value === undefined ? target.initial : (got.value as StateValueOf<K>))
+    const written = await engine.state.set(target.ref, next, { ifVersion: got.version })
+    if (written.isSet) return next
+  }
+}
+
+export function readRoute($: Engine): Promise<Route> {
   return read($, routeAtom)
 }
-export function writeRoute($: StateDollar, value: Route): Promise<Route> {
+export function writeRoute($: Engine, value: Route): Promise<Route> {
   return update($, routeAtom, () => value)
 }
-export function updateRoute($: StateDollar, change: (value: Route) => Route): Promise<Route> {
+export function updateRoute($: Engine, change: (value: Route) => Route): Promise<Route> {
   return update($, routeAtom, change)
 }
 
 // A session write drops a question asked on another installation: a yes must never act there.
-export function readSession($: StateDollar): Promise<SessionState> {
+export function readSession($: Engine): Promise<SessionState> {
   return read($, sessionAtom)
 }
-export async function writeSession($: StateDollar, value: SessionState): Promise<SessionState> {
+export async function writeSession($: Engine, value: SessionState): Promise<SessionState> {
   const written = await update($, sessionAtom, () => value)
   await dropConfirmNotFor($, written)
   return written
 }
 export async function updateSession(
-  $: StateDollar,
+  $: Engine,
   change: (value: SessionState) => SessionState,
 ): Promise<SessionState> {
   const written = await update($, sessionAtom, change)
@@ -142,90 +161,90 @@ function isAskedOn(confirm: NonNullable<ConfirmState>, session: SessionState): b
   return session.kind === 'connected' && session.url === confirm.url
 }
 
-async function dropConfirmNotFor($: StateDollar, session: SessionState): Promise<void> {
+async function dropConfirmNotFor($: Engine, session: SessionState): Promise<void> {
   const confirm = await read($, confirmAtom)
   if (confirm === null || isAskedOn(confirm, session)) return
   await update($, confirmAtom, current => (current === null || isAskedOn(current, session) ? current : null))
 }
 
-export function readLoads($: StateDollar): Promise<Record<string, LoadState>> {
+export function readLoads($: Engine): Promise<Record<string, LoadState>> {
   return read($, loadsAtom)
 }
-export function writeLoads($: StateDollar, value: Record<string, LoadState>): Promise<Record<string, LoadState>> {
+export function writeLoads($: Engine, value: Record<string, LoadState>): Promise<Record<string, LoadState>> {
   return update($, loadsAtom, () => value)
 }
 export function updateLoads(
-  $: StateDollar,
+  $: Engine,
   change: (value: Record<string, LoadState>) => Record<string, LoadState>,
 ): Promise<Record<string, LoadState>> {
   return update($, loadsAtom, change)
 }
 
-export function readConfirm($: StateDollar): Promise<ConfirmState> {
+export function readConfirm($: Engine): Promise<ConfirmState> {
   return read($, confirmAtom)
 }
-export function writeConfirm($: StateDollar, value: ConfirmState): Promise<ConfirmState> {
+export function writeConfirm($: Engine, value: ConfirmState): Promise<ConfirmState> {
   return update($, confirmAtom, () => value)
 }
-export function updateConfirm($: StateDollar, change: (value: ConfirmState) => ConfirmState): Promise<ConfirmState> {
+export function updateConfirm($: Engine, change: (value: ConfirmState) => ConfirmState): Promise<ConfirmState> {
   return update($, confirmAtom, change)
 }
 
-export function readExplain($: StateDollar): Promise<Record<string, ExplainState>> {
+export function readExplain($: Engine): Promise<Record<string, ExplainState>> {
   return read($, explainAtom)
 }
 export function writeExplain(
-  $: StateDollar,
+  $: Engine,
   value: Record<string, ExplainState>,
 ): Promise<Record<string, ExplainState>> {
   return update($, explainAtom, () => value)
 }
 export function updateExplain(
-  $: StateDollar,
+  $: Engine,
   change: (value: Record<string, ExplainState>) => Record<string, ExplainState>,
 ): Promise<Record<string, ExplainState>> {
   return update($, explainAtom, change)
 }
 
-export function readLog($: StateDollar): Promise<LogState> {
+export function readLog($: Engine): Promise<LogState> {
   return read($, logAtom)
 }
-export function writeLog($: StateDollar, value: LogState): Promise<LogState> {
+export function writeLog($: Engine, value: LogState): Promise<LogState> {
   return update($, logAtom, () => value)
 }
-export function updateLog($: StateDollar, change: (value: LogState) => LogState): Promise<LogState> {
+export function updateLog($: Engine, change: (value: LogState) => LogState): Promise<LogState> {
   return update($, logAtom, change)
 }
 
-export function readSwitcherOpen($: StateDollar): Promise<boolean> {
+export function readSwitcherOpen($: Engine): Promise<boolean> {
   return read($, switcherOpenAtom)
 }
-export function writeSwitcherOpen($: StateDollar, value: boolean): Promise<boolean> {
+export function writeSwitcherOpen($: Engine, value: boolean): Promise<boolean> {
   return update($, switcherOpenAtom, () => value)
 }
-export function updateSwitcherOpen($: StateDollar, change: (value: boolean) => boolean): Promise<boolean> {
+export function updateSwitcherOpen($: Engine, change: (value: boolean) => boolean): Promise<boolean> {
   return update($, switcherOpenAtom, change)
 }
 
 // True after a login found no CLI, until a login finds one: the pane then says how to install it.
-export function readCliMissing($: StateDollar): Promise<boolean> {
+export function readCliMissing($: Engine): Promise<boolean> {
   return read($, cliMissingAtom)
 }
-export function writeCliMissing($: StateDollar, value: boolean): Promise<boolean> {
+export function writeCliMissing($: Engine, value: boolean): Promise<boolean> {
   return update($, cliMissingAtom, () => value)
 }
-export function updateCliMissing($: StateDollar, change: (value: boolean) => boolean): Promise<boolean> {
+export function updateCliMissing($: Engine, change: (value: boolean) => boolean): Promise<boolean> {
   return update($, cliMissingAtom, change)
 }
 
-export function readLastContext($: StateDollar): Promise<string | null> {
+export function readLastContext($: Engine): Promise<string | null> {
   return read($, lastContextAtom)
 }
-export function writeLastContext($: StateDollar, value: string | null): Promise<string | null> {
+export function writeLastContext($: Engine, value: string | null): Promise<string | null> {
   return update($, lastContextAtom, () => value)
 }
 export function updateLastContext(
-  $: StateDollar,
+  $: Engine,
   change: (value: string | null) => string | null,
 ): Promise<string | null> {
   return update($, lastContextAtom, change)
@@ -235,11 +254,11 @@ const ROUTE_KEY = 'route'
 const PANE_WAS_OPEN_KEY = 'paneWasOpen'
 
 // A run id or a job of one installation means nothing on another, so an item route keeps its `url`.
-export async function saveRoute($: EngineInterface, route: Route, url: string): Promise<void> {
+export async function saveRoute($: Engine, route: Route, url: string): Promise<void> {
   await $.store.set(ROUTE_KEY, route.item === undefined ? route : { ...route, url })
 }
 
-export async function loadRoute($: EngineInterface, url: string | null): Promise<Route | null> {
+export async function loadRoute($: Engine, url: string | null): Promise<Route | null> {
   const stored: unknown = await $.store.get(ROUTE_KEY)
   const route = parseRoute(stored)
   if (route === null || route.item === undefined) return route
@@ -247,10 +266,10 @@ export async function loadRoute($: EngineInterface, url: string | null): Promise
   return url !== null && keptOn === url ? route : back(route)
 }
 
-export async function savePaneWasOpen($: EngineInterface, open: boolean): Promise<void> {
+export async function savePaneWasOpen($: Engine, open: boolean): Promise<void> {
   await $.store.set(PANE_WAS_OPEN_KEY, open)
 }
 
-export async function loadPaneWasOpen($: EngineInterface): Promise<boolean> {
+export async function loadPaneWasOpen($: Engine): Promise<boolean> {
   return (await $.store.get(PANE_WAS_OPEN_KEY)) === true
 }
