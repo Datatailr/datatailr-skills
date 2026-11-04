@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { EngineInterface, Register } from 'claude-code'
+import type { EngineInterface, PromptSubmitInput, Register, RenderElement, RenderInput } from 'claude-code'
 
 import { contextFor, isTypedPrompt } from '../src/assist/context'
 import { dropPendingExplains } from '../src/assist/explain'
@@ -76,19 +76,27 @@ export const register: Register = (on, options) => {
     return { text: opened.isPlaced ? 'Datatailr pane opened.' : notPlaced(opened) }
   })
 
+  // A failed gating hook is skipped, so each one answers for itself when it fails.
   on('tool.call', { tool: 'mcp__datatailr-dashboard__open_pane' }, async $ => {
     const opened = await openPane($)
 
     return { result: opened.isPlaced ? 'Datatailr pane is open.' : notPlaced(opened) }
-  })
+  }).catch(() => ({ result: `The Datatailr pane could not open. ${NOT_PLACED_HINT}` }))
 
-  on('ui.render', { component: 'Pane', requestId: PANE_ID }, async ($, e) => renderPane($, e, runtime))
+  on('ui.render', { component: 'Pane', requestId: PANE_ID }, async ($, e) => drawPane($, e, runtime))
 
-  on('prompt.submit', async ($, e, next) => {
-    const block = isTypedPrompt(e) ? await contextFor($, runtime).catch(() => null) : null
+  on('prompt.submit', async ($, e, next) => next(await withPaneContext($, e, runtime))).catch(($, e, next) => next(e))
+}
 
-    return next(block === null ? e : { ...e, context: [...(e.context ?? []), block] })
-  })
+// The plugin directory reads `$` in a hook only as a plain `$.noun.method(...)` call, or passed whole
+// to a function of this file. These two hand it on to the modules that draw and describe the pane.
+function drawPane($: EngineInterface, e: RenderInput<'Pane'>, runtime: Runtime): Promise<RenderElement> {
+  return renderPane($, e, runtime)
+}
+
+async function withPaneContext($: EngineInterface, e: PromptSubmitInput, runtime: Runtime): Promise<PromptSubmitInput> {
+  const block = isTypedPrompt(e) ? await contextFor($, runtime).catch(() => null) : null
+  return block === null ? e : { ...e, context: [...(e.context ?? []), block] }
 }
 
 async function startDashboard($: EngineInterface, runtime: Runtime): Promise<void> {
