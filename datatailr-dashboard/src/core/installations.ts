@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { EngineInterface } from 'claude-code'
+import type { Engine } from './engine'
 
 export type Installation = { name: string; url: string; userName: string | null; hasPassword: boolean; file: string }
 
@@ -65,14 +65,14 @@ export function installationName(url: string): string {
 }
 
 // Windows has no `HOME` as a rule: its home folder is `USERPROFILE`.
-export async function resolveHome($: EngineInterface, path: string): Promise<string> {
+export async function resolveHome($: Engine, path: string): Promise<string> {
   if (path !== '~' && !path.startsWith('~/')) return path
   const home = (await $.env.get('HOME')) || (await $.env.get('USERPROFILE'))
   if (!home) throw new Error('HOME is not set')
   return home.replace(/[\\/]+$/, '') + path.slice(1)
 }
 
-export async function listInstallations($: EngineInterface, dir: string): Promise<Installation[]> {
+export async function listInstallations($: Engine, dir: string): Promise<Installation[]> {
   const entries = await $.fs.list(dir).catch(() => [])
   const base = dir.replace(/\/+$/, '')
   const found: Installation[] = []
@@ -97,7 +97,7 @@ export async function listInstallations($: EngineInterface, dir: string): Promis
 }
 
 // Holds the password. For the login step only: never show, store or log it.
-export async function readInstallationEnv($: EngineInterface, inst: Installation): Promise<Record<string, string>> {
+export async function readInstallationEnv($: Engine, inst: Installation): Promise<Record<string, string>> {
   return parseEnvFile(await $.fs.read(inst.file))
 }
 
@@ -118,7 +118,7 @@ export class InstallationExistsError extends Error {
 
 // Never overwrites: an existing env file can hold hand-written settings. The name comes from the host
 // alone, so the file may name another address (`http://` where `https://` was typed): the error says which.
-export async function writeInstallation($: EngineInterface, dir: string, url: string): Promise<Installation> {
+export async function writeInstallation($: Engine, dir: string, url: string): Promise<Installation> {
   const normalized = normalizeUrl(url)
   const name = installationName(normalized)
   const file = `${dir.replace(/\/+$/, '')}/${name}${ENV_SUFFIX}`
@@ -127,7 +127,7 @@ export async function writeInstallation($: EngineInterface, dir: string, url: st
   return { name, url: normalized, userName: null, hasPassword: false, file }
 }
 
-async function urlInFile($: EngineInterface, file: string): Promise<string | null> {
+async function urlInFile($: Engine, file: string): Promise<string | null> {
   try {
     return normalizeUrl(parseEnvFile(await $.fs.read(file)).DATATAILR_BASE_URL ?? '')
   } catch {
@@ -136,7 +136,7 @@ async function urlInFile($: EngineInterface, file: string): Promise<string | nul
 }
 
 // Each login writes the CLI configuration file, so a newer time means a new session.
-export async function cliConfigModifiedAt($: EngineInterface): Promise<number | null> {
+export async function cliConfigModifiedAt($: Engine): Promise<number | null> {
   try {
     return (await $.fs.stat(await resolveHome($, CLI_CONFIG))).mtimeMs
   } catch {
@@ -144,7 +144,7 @@ export async function cliConfigModifiedAt($: EngineInterface): Promise<number | 
   }
 }
 
-export async function readCliSession($: EngineInterface): Promise<CliSession | null> {
+export async function readCliSession($: Engine): Promise<CliSession | null> {
   try {
     const config: unknown = JSON.parse(await $.fs.read(await resolveHome($, CLI_CONFIG)))
     if (typeof config !== 'object' || config === null) return null

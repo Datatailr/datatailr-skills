@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { EngineInterface } from 'claude-code'
+import type { Engine } from '../core/engine'
 
 import { ApiError } from '../core/api'
 import type { Endpoints } from '../core/endpoints'
@@ -85,7 +85,7 @@ export async function loadSummary(endpoints: Endpoints, now: number): Promise<Su
 export type LogHost = { logs: LogReader | null; route: Route }
 
 export function loadSpecs(
-  $: EngineInterface,
+  $: Engine,
   endpoints: Endpoints,
   sections: readonly Section<any>[],
   route: Route,

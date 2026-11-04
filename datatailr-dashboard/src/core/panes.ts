@@ -8,11 +8,11 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { EngineInterface } from 'claude-code'
+import type { Engine } from './engine'
 
 import { PANE_ID } from './ids'
 
 // A function declaration, so that `claude plugin validate` follows `$` into it.
-export async function isPaneShown($: EngineInterface): Promise<boolean> {
+export async function isPaneShown($: Engine): Promise<boolean> {
   return (await $.ui.panes()).some(pane => pane.id === PANE_ID && pane.isShown)
 }

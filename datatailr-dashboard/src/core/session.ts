@@ -8,7 +8,9 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { EngineInterface, PluginOptions } from 'claude-code'
+import type { PluginOptions } from 'claude-code'
+
+import type { Engine } from './engine'
 
 import {
   type Installation,
@@ -53,7 +55,7 @@ type RunningLogin = {
 
 let running: RunningLogin | null = null
 
-export async function syncSession($: EngineInterface, options: PluginOptions): Promise<SessionState> {
+export async function syncSession($: Engine, options: PluginOptions): Promise<SessionState> {
   const current = await readSession($)
   if (isHeld(current)) return current
   const found = await observeSession($, options)
@@ -63,7 +65,7 @@ export async function syncSession($: EngineInterface, options: PluginOptions): P
   return updateSession($, latest => (isHeld(latest) || isStillExpired(latest, found, writtenAt) ? latest : found))
 }
 
-export async function switchTo($: EngineInterface, options: PluginOptions, name: string): Promise<SessionState> {
+export async function switchTo($: Engine, options: PluginOptions, name: string): Promise<SessionState> {
   let before: SessionState | null = null
   for (let other = running; other !== null; other = running) {
     if (other.name === name && !other.controller.signal.aborted) return other.started
@@ -99,7 +101,7 @@ export async function switchTo($: EngineInterface, options: PluginOptions, name:
   }
 }
 
-export async function cancelLogin($: EngineInterface, options: PluginOptions): Promise<SessionState> {
+export async function cancelLogin($: Engine, options: PluginOptions): Promise<SessionState> {
   const login = running
   let next: SessionState
   if (login === null) {
@@ -121,7 +123,7 @@ export async function cancelLogin($: EngineInterface, options: PluginOptions): P
 }
 
 async function runLogin(
-  $: EngineInterface,
+  $: Engine,
   options: PluginOptions,
   name: string,
   before: SessionState,
@@ -187,7 +189,7 @@ async function runLogin(
   })
 }
 
-export async function addInstallation($: EngineInterface, options: PluginOptions, url: string): Promise<SessionState> {
+export async function addInstallation($: Engine, options: PluginOptions, url: string): Promise<SessionState> {
   const refuse = (message: string) => (running !== null ? readSession($) : fail($, message))
   let normalized: string
   try {
@@ -218,11 +220,11 @@ export async function addInstallation($: EngineInterface, options: PluginOptions
   return switchTo($, options, name)
 }
 
-export async function installationsFor($: EngineInterface, options: PluginOptions): Promise<Installation[]> {
+export async function installationsFor($: Engine, options: PluginOptions): Promise<Installation[]> {
   return listAll($, options)
 }
 
-export async function markExpired($: EngineInterface): Promise<void> {
+export async function markExpired($: Engine): Promise<void> {
   if ((await readSession($)).kind !== 'connected') return
   const since = await $.clock.now()
   await updateSession($, (current): SessionState => {
@@ -233,7 +235,7 @@ export async function markExpired($: EngineInterface): Promise<void> {
 }
 
 // The password lives only in these locals. A read error is not shown: its text can hold the file content.
-async function passwordLogin($: EngineInterface, cli: string, installation: Installation): Promise<LoginOutcome> {
+async function passwordLogin($: Engine, cli: string, installation: Installation): Promise<LoginOutcome> {
   let user = ''
   let password = ''
   try {
@@ -253,7 +255,7 @@ async function passwordLogin($: EngineInterface, cli: string, installation: Inst
 }
 
 async function deviceLogin(
-  $: EngineInterface,
+  $: Engine,
   cli: string,
   installation: Installation,
   shown: LoggingIn,
@@ -300,23 +302,23 @@ function cliPathOption(options: PluginOptions): string {
 }
 
 /** Whether a login can run: only a login needs the CLI. A pane without one reads the platform all the same. */
-export async function hasCli($: EngineInterface, options: PluginOptions): Promise<boolean> {
+export async function hasCli($: Engine, options: PluginOptions): Promise<boolean> {
   return (await findCli($, cliPathOption(options))) !== null
 }
 
 // `cliMissing` tells the pane to say how to install the CLI where the login was offered, until a login finds one.
-async function cliForLogin($: EngineInterface, options: PluginOptions): Promise<string | null> {
+async function cliForLogin($: Engine, options: PluginOptions): Promise<string | null> {
   const cli = await findCli($, cliPathOption(options))
   const isMissing = cli === null
   if ((await readCliMissing($)) !== isMissing) await writeCliMissing($, isMissing)
   return cli
 }
 
-async function installationsDir($: EngineInterface, options: PluginOptions): Promise<string> {
+async function installationsDir($: Engine, options: PluginOptions): Promise<string> {
   return resolveHome($, installationsDirOption(options))
 }
 
-async function listAll($: EngineInterface, options: PluginOptions): Promise<Installation[]> {
+async function listAll($: Engine, options: PluginOptions): Promise<Installation[]> {
   try {
     return await listInstallations($, await installationsDir($, options))
   } catch {
@@ -325,7 +327,7 @@ async function listAll($: EngineInterface, options: PluginOptions): Promise<Inst
 }
 
 // The session of the CLI file is all a pane needs: the data comes over HTTP. The CLI itself is for the logins.
-async function observeSession($: EngineInterface, options: PluginOptions): Promise<SessionState> {
+async function observeSession($: Engine, options: PluginOptions): Promise<SessionState> {
   const session = await readCliSession($)
   if (session === null) return (await hasCli($, options)) ? { kind: 'disconnected' } : { kind: 'no-cli' }
   const match = (await listAll($, options)).find(installation => installation.url === session.url)
@@ -356,10 +358,10 @@ function deferred<T>(): { promise: Promise<T>; resolve: (value: T) => void } {
   return { promise, resolve }
 }
 
-async function setSession($: EngineInterface, state: SessionState): Promise<SessionState> {
+async function setSession($: Engine, state: SessionState): Promise<SessionState> {
   return writeSession($, state)
 }
 
-function fail($: EngineInterface, message: string): Promise<SessionState> {
+function fail($: Engine, message: string): Promise<SessionState> {
   return setSession($, { kind: 'error', installation: null, message })
 }

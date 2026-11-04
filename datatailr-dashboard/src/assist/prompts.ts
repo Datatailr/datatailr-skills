@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { EngineInterface } from 'claude-code'
+import type { Engine } from '../core/engine'
 
 import type { ItemRef } from '../core/route'
 import { oneLine } from './text'
@@ -61,7 +61,7 @@ export function explainKey(url: string, item: ItemRef, state: string): string {
 
 let lastDraft: string | null = null
 
-export async function fillDraft($: EngineInterface, text: string): Promise<void> {
+export async function fillDraft($: Engine, text: string): Promise<void> {
   const held = (await $.prompt.read()).text
   const isOurs = lastDraft !== null && held.trim() === lastDraft.trim()
   const filled =
