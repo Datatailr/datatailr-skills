@@ -28,6 +28,8 @@ permission to perform the requested operations.
 
 ## Instructions
 
+If a `datatailr-connect` skill is available and no `dt` command works yet, use it first. It sets up the environment and logs in.
+
 Before writing code, determine which components you need to build and how they should interact with each other. Some tasks will require multiple components to be deployed together.
 
 ## Components
@@ -41,6 +43,8 @@ Before writing code, determine which components you need to build and how they s
 | Distributed scikit-learn / joblib | Run joblib-parallel workloads (grid search, cross-validation) on an automatically managed pool of worker containers. | [datatailr-distributed-joblib](../datatailr-distributed-joblib/SKILL.md) |
 | Compute Nodes | List, inspect, drain, tag, create, resize and terminate the machines that run jobs, with the `Node` class or `dt node`. | [datatailr-nodes](../datatailr-nodes/SKILL.md) |
 | Admin & Cluster Settings | Manage autoscaler capacity, platform settings, login, ACLs and budgets via `dt settings` and `Budget`. | [datatailr-admin](../datatailr-admin/SKILL.md) |
+
+To change an app, a service or an Excel add-in that is already deployed, read [datatailr-modify-job](../datatailr-modify-job/SKILL.md). Do not rewrite deployed code from scratch. To change a deployed workflow, edit its source project and deploy it again.
 
 Pair with [datatailr-project-structure](../datatailr-project-structure/SKILL.md) for which component
 types to build, then the matching [datatailr-deploy-*](../datatailr-deploy-workflow/SKILL.md) skills for the deploy API.
@@ -70,6 +74,11 @@ log.critical("This is a critical message")
 
 These logs will be visible in the Datatailr UI under the "stdout" and "stderr" tabs of the job's logs, as well as using the `Job.logs()` method and `dt log read` CLI command.
 More about observability and logging can be found in [datatailr-job-observability](../datatailr-job-observability/SKILL.md). To roll a job back to a previous version, see [datatailr-job-rollback](../datatailr-job-rollback/SKILL.md).
+
+## Reporting a deploy
+
+- For an app or a service, give the user the URL of the running job, `<base-url>/job/<env>/<name>/`. Do not give the job-details URL that the deploy prints, such as `<base-url>/job-details/<name>/app/<env>/<version>`. For a workflow or an Excel add-in, give the job-details URL that the deploy prints.
+- Never print the session token or the contents of `~/.dt/remote_client/remote_client.cfg`, and never run a command that prints them.
 
 ## `dt` CLI and wrapper
 All interactions with the platform are done via the `dt` CLI command. The command is also available as a Python wrapper.
