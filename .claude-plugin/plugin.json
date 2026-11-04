@@ -1,8 +1,11 @@
 {
   "name": "datatailr-skills",
-  "version": "0.1.0-dev.1",
+  "version": "0.2.13",
   "description": "Connect to your Datatailr installation, then build, deploy and manage with it. Start with the datatailr-connect skill.",
-  "skills": ["./skills", "./entry"],
+  "skills": [
+    "./skills",
+    "./entry"
+  ],
   "author": {
     "name": "Datatailr",
     "url": "https://www.datatailr.com/"
@@ -13,5 +16,10 @@
   "documentationUrl": "https://ai.docs.datatailr.com/latest/",
   "repository": "https://github.com/Datatailr/datatailr-skills",
   "license": "MIT",
-  "keywords": ["datatailr", "data", "workflows", "deployment"]
+  "keywords": [
+    "datatailr",
+    "data",
+    "workflows",
+    "deployment"
+  ]
 }

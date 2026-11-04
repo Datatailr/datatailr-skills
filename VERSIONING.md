@@ -1,9 +1,9 @@
 # Skills versioning
 
-- **Development:** daily sync updates `main` from Sonic. It does not create
-  release tags, change the skills manifest versions or update installed
-  skills. The dashboard keeps the version that Sonic gives it, so a new
-  dashboard version moves with the sync.
+- **Development:** daily sync updates `main` from Sonic. It writes the SDK
+  version of the synced skills into both skills manifests, creates no release
+  tags and updates no installed skills. The dashboard keeps the version that
+  Sonic gives it, so a new dashboard version moves with the sync.
 - **Releases:** after the SDK is published to PyPI through Sonic's release
   workflow, it publishes a matching `v<SDK version>` tag here. The tag contains
   skills from the same source commit and matching skills manifest versions.
@@ -12,9 +12,10 @@
   `0.1.9` corresponds to skills `v0.1.9`, if that tag exists. Do not assume
   development `main` matches an older SDK. Never move an existing release tag.
 
-The skills manifests on `main` use a development version that does not declare
-SDK compatibility. Check the repository's tags for a matching SDK release. If
-no matching tag exists, use the skills bundled with your SDK.
+The skills manifests on `main` carry the SDK version of the skills on `main`,
+which is the version Sonic's `main` declares. A release tag holds the same
+version with the skills of that release commit. If no matching tag exists, use
+the skills bundled with your SDK.
 Older tags retain their original packaging. The Claude catalog and skills.sh
 bundle require a tag containing `.claude-plugin/marketplace.json` and the root
 `SKILL.md`; do not move an old tag to add them.
@@ -23,9 +24,11 @@ The SDK still bundles skills, and `datatailr setup-skills` copies those files.
 Selecting marketplace releases through that command and removing bundled
 skills are separate work. Platform–SDK compatibility is handled separately.
 
-For Claude directory releases of the skills plugin, select a tested tag in the
-portal. To release the next version, change the tracked tag to the new one and
-follow validation and publishing. See [Claude's update guide](https://claude.com/docs/plugins/submit#change-the-tracked-branch-or-tag).
+The Claude directory submission of the skills plugin tracks `main`. A new SDK
+release reaches it with the next sync, which writes the new version, and the
+directory reviews the new version. A change to the connect skill or the session
+hook, which live only here, reaches it the same way. See
+[Claude's update guide](https://claude.com/docs/plugins/submit#change-the-tracked-branch-or-tag).
 
 The `datatailr-dashboard` plugin keeps its own version. Sonic sets it in the
 dashboard `plugin.json`, and the release script does not change it. It does not
