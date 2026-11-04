@@ -7,6 +7,8 @@ description: Start here for any Datatailr task when the environment is not set u
 
 This skill sets up a project, installs the Datatailr SDK and logs in to the user's Datatailr installation. It does not build or deploy anything. When it is done, step 4 hands over to the other `datatailr` skills. Follow the steps in order, because later steps depend on earlier ones.
 
+All commands in this skill are bash commands. Claude Cowork runs them in its Linux virtual machine on every host, Windows included, so use them as written there. In Claude Code on Windows, run them with the Bash tool, which uses Git Bash, and not with the PowerShell tool. The one difference there is the venv layout. A venv created on Windows keeps its programs in `.venv/Scripts`, so read `.venv/Scripts` wherever this skill says `.venv/bin`.
+
 Authentication uses **device login**. You start the login, the user approves it in their browser, and the CLI saves the session. You never see, ask for, or store a password.
 
 ## 0. Create an isolated project directory
@@ -27,7 +29,7 @@ python -m venv .venv
 .venv/bin/python -m pip install --upgrade datatailr
 ```
 
-If `python` does not exist, use `python3` for the first command. On Windows the venv folder is `.venv\Scripts` instead of `.venv/bin`. Use that folder wherever this skill says `.venv/bin`.
+If `python` does not exist, use `python3` for the first command.
 
 Keep the venv inside the project directory (`.venv`), not system-wide.
 
