@@ -99,12 +99,12 @@ def random_matrix(queue: Queue, m: int, n: int) -> list:
 
 ### Key rules
 
-- `main(port, ws_port)` is required as the deploy script entrypoint and for local debugging. The platform does **not** call `main()` at runtime -- it launches `dt-excel.sh` directly, which imports the `addin` object from the module.
-- The `Addin` instance variable must be named `addin` in the module. The `Addin.__init__` method sets `__dt_addin__` on the module automatically -- you do not need to set it yourself, but the instance **must** be called `addin`.
+- `main(port, ws_port)` is required as the deploy script entrypoint and for local debugging. The platform does **not** call `main()` at runtime -- it launches `dt-excel.sh` directly, which imports the module of `main` and starts the `Addin` object that this module creates.
+- Create the `Addin` object in the **same module** as `main`. `Addin.__init__` sets `__dt_addin__` on the module that creates the object, and the platform imports `__dt_addin__` from the module of the entrypoint. The variable name does not matter (`addin` is only a convention). If you create the `Addin` in another module and import it into the module of `main`, the platform cannot find it.
 - **Use only plain type hints**: `int`, `float`, `list`, `bool`, and `str`. Do **not** use generic types like `List[float]`, `list[list[str]]`, or `Optional[int]` -- they cause "Invalid argument" errors in the Excel bridge. The platform infers dimensionality from the actual value, not from the type hint.
 - Streaming functions may annotate the first parameter as `queue: Queue` (or `datatailr.excel.Queue`); that parameter is excluded from the Excel signature.
 - `ExcelAddin(...)` validates annotations in the entrypoint source file at construction time and raises `ValueError` if any exposed function uses a disallowed type.
-- Use `snake_case` for function names - this simplifies the conversion to Excel function names.
+- Excel function names are `ADDINNAME.FUNCTIONNAME`: the add-in name and the Python function name in upper case, with only their letters and digits (spaces, `_` and other punctuation are removed). For example, `Addin("My Addin", ...)` with `def rate_table(...)` gives `=MYADDIN.RATETABLE(...)`. Excel function names are not case-sensitive. Use these names when you tell the user how to call the functions.
 
 ## Deploy script
 
@@ -149,7 +149,7 @@ When you (the agent) run the deploy script yourself, you may get `RuntimeError: 
 
 ## Checklist
 
-- [ ] `Addin` instance is named `addin` in the module
+- [ ] `Addin` object is created in the same module as `main`
 - [ ] Functions are decorated with `@addin.expose(description=..., help=...)`
 - [ ] All function parameters have type hints
 - [ ] Module has a `main(port, ws_port)` function calling `addin.run(port, ws_port)`

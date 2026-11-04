@@ -30,8 +30,10 @@ Key points:
   worker containers plus a small broker service. Startup takes tens of
   seconds. When that `Parallel` finishes, the pool is torn down; a later
   `Parallel` starts a fresh pool.
-- Inside the context, scikit-learn estimators should use `n_jobs=-1` (or a
-  positive count) so they actually parallelize.
+- Do not set `n_jobs` on the scikit-learn estimator. The estimator then uses
+  the `n_jobs` of `parallel_backend` (16 workers above). Do not use
+  `n_jobs=-1`: the backend then starts 4 workers, unless you set the
+  `n_workers` option.
 - Pools shut down automatically when the process exits. To free resources
   earlier, call `datatailr.joblib.shutdown_pools()`.
 
@@ -51,6 +53,8 @@ with joblib.parallel_backend(
     ...
 ```
 
+- `n_workers`: number of worker containers. The default is the `n_jobs` of
+  the first `Parallel` call, or 4 if that `n_jobs` is `-1`.
 - `embed_modules`: use when tasks reference helper modules that exist only on
   the driver machine (not installed in the workstation image). Accepts module
   objects or module-name strings.
