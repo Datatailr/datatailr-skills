@@ -8,9 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { PluginOptions, PromptSubmitInput } from 'claude-code'
-
-import type { Engine } from '../core/engine'
+import type { EngineInterface, PluginOptions, PromptSubmitInput } from 'claude-code'
 
 import { isPaneShown } from '../core/panes'
 import { routeKey } from '../core/route'
@@ -46,7 +44,7 @@ export function contextBlock(installation: string, sectionTitle: string, describ
 
 export type ContextHost = { options: PluginOptions; sections: readonly Section<any>[] }
 
-export async function contextFor($: Engine, host: ContextHost): Promise<string | null> {
+export async function contextFor($: EngineInterface, host: ContextHost): Promise<string | null> {
   if (!isSharing(host.options)) return null
 
   const session = await readSession($)

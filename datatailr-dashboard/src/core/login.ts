@@ -10,8 +10,6 @@
 
 import type { EngineInterface } from 'claude-code'
 
-import type { Engine } from './engine'
-
 import { normalizeUrl, resolveHome } from './installations'
 
 export type LoginFailure = {
@@ -26,8 +24,6 @@ export type LoginOutcome = { ok: true } | LoginFailure
 export const MFA_MARKER = 'Not authenticated or session expired'
 
 const CLI_NAME = 'datatailr'
-// The data folder of the `datatailr-skills` plugin from the `datatailr` marketplace: `<plugin>-<marketplace>`.
-const SKILLS_PLUGIN_DATA = 'datatailr-skills-datatailr'
 const MARKER_LINE = 'Open this URL in your browser to log in:'
 const PASSWORD_LOGIN_TIMEOUT_MS = 60_000
 const MAX_MESSAGE = 300
@@ -50,7 +46,7 @@ const STEP_LINES = [MARKER_LINE, 'Waiting for authorization...']
 
 // Windows separates `PATH` with `;` and names the executable `datatailr.exe`. `OS` is `Windows_NT` on
 // every Windows, and unset elsewhere.
-export async function findCli($: Engine, cliPath: string): Promise<string | null> {
+export async function findCli($: EngineInterface, cliPath: string): Promise<string | null> {
   const named = cliPath.trim()
   if (named !== '') {
     try {
@@ -70,26 +66,12 @@ export async function findCli($: Engine, cliPath: string): Promise<string | null
       if (await $.fs.exists(path)) return path
     }
   }
-  // The skills plugin installs the CLI at session start into its data folder, or under
-  // `~/.datatailr` where it has none. A pane without `cliPath` looks there last.
-  const configDir = ((await $.env.get('CLAUDE_CONFIG_DIR')) || '~/.claude').replace(trailing, '')
-  const layout = isWindows ? 'Scripts' : 'bin'
-  for (const folder of [`${configDir}/plugins/data/${SKILLS_PLUGIN_DATA}/venv/${layout}`, `~/.datatailr/venv/${layout}`]) {
-    for (const name of names) {
-      try {
-        const path = await resolveHome($, `${folder}/${name}`)
-        if (await $.fs.exists(path)) return path
-      } catch {
-        // No home folder: the `~` candidates do not exist.
-      }
-    }
-  }
   return null
 }
 
 // The credentials go to the child through its environment only, never through `argv`.
 export async function loginWithPassword(
-  $: Engine,
+  $: EngineInterface,
   cli: string,
   url: string,
   user: string,
@@ -128,7 +110,7 @@ function leave(stream: SpawnStream): void {
 
 // The CLI prints nothing while the user has not approved, so a read races the abort signal.
 export async function loginWithDevice(
-  $: Engine,
+  $: EngineInterface,
   cli: string,
   url: string,
   onLink: (link: string) => void,

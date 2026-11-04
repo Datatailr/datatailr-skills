@@ -8,9 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { RenderElement, RenderInput } from 'claude-code'
-
-import type { Engine } from '../core/engine'
+import type { EngineInterface, RenderElement, RenderInput } from 'claude-code'
 
 import { isSharing } from '../assist/context'
 import { logKey, sessionUrl } from '../core/logs'
@@ -45,7 +43,7 @@ import { loadsFor, sectionLoadOf, summaryOf, viewOf } from './view'
 
 const RAIL_GAP = 2
 
-export async function renderPane($: Engine, e: RenderInput<'Pane'>, runtime: Runtime): Promise<RenderElement> {
+export async function renderPane($: EngineInterface, e: RenderInput<'Pane'>, runtime: Runtime): Promise<RenderElement> {
   const ui: UiCtx = { els: $.ui.resolve(e), surface: e.surface, columns: e.props.bodyColumns }
   const { Box } = ui.els
   const act = createActions($, runtime)
@@ -185,7 +183,7 @@ function screenFor(ui: UiCtx, act: PaneActions, session: SessionState, folder: s
 }
 
 async function drawSwitcher(
-  $: Engine,
+  $: EngineInterface,
   ui: UiCtx,
   runtime: Runtime,
   act: PaneActions,

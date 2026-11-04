@@ -10,8 +10,6 @@
 
 import type { EngineInterface } from 'claude-code'
 
-import type { Engine } from './engine'
-
 import type { CliSession } from './installations'
 import { after } from './timers'
 
@@ -114,7 +112,7 @@ export function classifyResponse(status: number, headers: Record<string, string>
   return interpret(status, headers, text).kind
 }
 
-function deadline($: Engine): { expired: Promise<never>; cancel(): void } {
+function deadline($: EngineInterface): { expired: Promise<never>; cancel(): void } {
   let expire!: (error: ApiError) => void
   const expired = new Promise<never>((_resolve, reject) => {
     expire = reject
@@ -136,7 +134,7 @@ function query(params: Params | undefined): string {
 // A login in a terminal can move the CLI to another installation up to 30 s before the pane follows.
 // Meanwhile a call is refused unsent, as a network error, so the session does not end.
 export function createApi(
-  $: Engine,
+  $: EngineInterface,
   session: () => Promise<CliSession | null>,
   shown: () => Promise<string>,
 ): Api {

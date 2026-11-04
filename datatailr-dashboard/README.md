@@ -61,14 +61,11 @@ pane draws without the timeline chart.
   login from a virtual environment is enough.
 - The `datatailr` CLI, to log in from the pane. Install it with
   `pip install datatailr`. A pick in the switcher, "Add installation" and "Log
-  in again" run the CLI. For them, the plugin looks for the CLI in the folders
-  of the `PATH` of the Claude process, then in the venv that the
-  `datatailr-skills` plugin installs at session start,
-  `~/.claude/plugins/data/datatailr-skills-datatailr/venv`, then in
-  `~/.datatailr/venv`. If it is somewhere else, set the `cliPath` option. The
-  plugin is tested on macOS and Linux. On Windows, it looks for `datatailr.exe`
-  in the `Scripts` folders of those places, and reads your home folder from
-  `USERPROFILE` when `HOME` is not set. If the plugin
+  in again" run the CLI. For them, the CLI must be on the `PATH` of the Claude
+  process. If it is somewhere else, set the `cliPath` option. The plugin is
+  tested on macOS and Linux. On Windows, it looks for `datatailr.exe` in the
+  folders of `PATH`, and reads your home folder from `USERPROFILE` when `HOME`
+  is not set. If the plugin
   finds no CLI for a login, the pane tells you how to install it. It says so
   where you asked for the login: in the switcher, or under the bar that says
   your session ended. With no session and no CLI, the pane only tells you how
@@ -176,11 +173,11 @@ Code.
 | Option             | Default                       | Meaning                                                                      |
 |--------------------|-------------------------------|------------------------------------------------------------------------------|
 | `installationsDir` | `~/.datatailr/installations`  | Folder with one env file for each Datatailr installation                     |
-| `cliPath`          | empty                         | Path to the `datatailr` CLI. Empty means search `PATH`, then the known venvs |
+| `cliPath`          | empty                         | Path to the `datatailr` CLI. Empty means search the `PATH` of Claude         |
 | `shareContext`     | `true`                        | Let Claude see a short summary of what the pane shows                        |
 
 The plugin runs the CLI only for a login from the pane. If you set `cliPath`,
-the plugin uses only that path and does not search `PATH` or the venvs.
+the plugin uses only that path and does not search `PATH`.
 
 ## Commands
 
@@ -248,75 +245,6 @@ The pane never draws a secret value. The password of an installation stays in
 its env file and in the environment of the login process. The session token
 stays in the CLI file `~/.dt/remote_client/remote_client.cfg`. The plugin does
 not copy it.
-
-## What the plugin reads, runs, sends and writes
-
-This section is for the reviewer of the Claude plugin directory, and for
-anyone who wants to know what the hooks module does.
-
-The hooks module registers five hooks:
-
-- `session.start` registers the `/dt` command and the `open_pane` tool. Then
-  it reads the saved state, creates the HTTP client and starts the scheduler
-  that refreshes the data.
-- `command.run` for `/dt` opens the pane. `/dt refresh` reads the data again.
-- `tool.call` for the plugin's own tool, `mcp__datatailr-dashboard__open_pane`,
-  opens the pane and answers the call itself with a short text. It stands in
-  for no other tool.
-- `ui.render` draws the pane.
-- `prompt.submit` adds the context block of the previous section to a message
-  you type. It does so only when the pane is shown and the context option is
-  on. It changes nothing else in the message, and it passes every other prompt
-  through as it is.
-
-What it reads:
-
-- The CLI session file, `~/.dt/remote_client/remote_client.cfg`: the URL of
-  the installation and the session token. The token goes only in the `Cookie`
-  header of the requests to that installation.
-- The env files of the installations folder, `~/.datatailr/installations` by
-  default: the URL, the user name and the password of each installation. The
-  password goes only in the environment of the login process for that
-  installation.
-- The environment variables `HOME`, `USERPROFILE`, `OS`, `PATH` and
-  `CLAUDE_CONFIG_DIR`, to find your home folder and the CLI.
-
-The token and the password that the plugin reads belong to the installation
-it sends them to, and to nothing else.
-
-What it runs: only the `datatailr` CLI, from the `cliPath` option, from the
-`PATH` of Claude, or from the venv of the skills plugin. It runs
-`datatailr login` for a password login and `datatailr login --device` for a
-device login, each with the URL of the installation. It runs no other program
-and no shell.
-
-What it sends, and where:
-
-- HTTP requests to the API of the installation that the session file names,
-  `<base_url>/api/<command>/<subcommand>`, with the session token as a cookie.
-  The hosts are the installations you logged in to. It contacts no other host.
-- Explain sends the scrubbed facts, the error and the last 60 lines of the log
-  of one item to the `haiku` model through Claude Code. It does so only when
-  you press it.
-- Ask Claude and Continue in chat put a text in your message box. Nothing is
-  sent until you send it.
-
-What it writes:
-
-- The env file of an installation that you add from the switcher, in the
-  installations folder.
-- Its own state in Claude Code: the route, the session, the loaded data, the
-  explanation cache, the log view and the context record. No secret goes in
-  there.
-- Two values in the plugin store: the last route, and whether the pane was
-  open.
-- A text in your message box, when you press Ask Claude or Continue in chat.
-
-It writes no build, start-up, settings or instructions file.
-
-The `types` field of the manifest names `types/index.d.ts`, the contract of
-the plugin's state, which `claude plugin validate` reads. Claude Code ignores
-the field when it loads the plugin.
 
 ## Local development
 

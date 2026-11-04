@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { Engine } from '../core/engine'
+import type { EngineInterface } from 'claude-code'
 
 import { type ExplainState, readExplain, updateExplain } from '../core/state'
 import { abortAfter } from '../core/timers'
@@ -45,7 +45,7 @@ export function explainPrompt(input: ExplainInput): string {
   ].join('\n\n')
 }
 
-export async function explain($: Engine, key: string, input: ExplainInput): Promise<void> {
+export async function explain($: EngineInterface, key: string, input: ExplainInput): Promise<void> {
   let isMine = false
   await updateExplain($, current => {
     // `change` may run more than once: the last run is the one that lands, and it sets the flag again.
@@ -72,7 +72,7 @@ export async function explain($: Engine, key: string, input: ExplainInput): Prom
 }
 
 /** A hot reload keeps `$.state` but loses the calls in flight: a key left `loading` would block Explain. */
-export async function dropPendingExplains($: Engine): Promise<void> {
+export async function dropPendingExplains($: EngineInterface): Promise<void> {
   const held = await readExplain($)
   if (!Object.values(held).some(entry => entry.status === 'loading')) return
 

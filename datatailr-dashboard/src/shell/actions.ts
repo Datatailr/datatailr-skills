@@ -8,9 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { PluginOptions } from 'claude-code'
-
-import type { Engine } from '../core/engine'
+import type { EngineInterface, PluginOptions } from 'claude-code'
 
 import { explain } from '../assist/explain'
 import { fillDraft } from '../assist/prompts'
@@ -91,7 +89,7 @@ export async function refreshLoads(runtime: Runtime): Promise<void> {
 }
 
 // A login in a terminal can move the session to another installation, where the open item means nothing.
-export async function syncPane($: Engine, runtime: Runtime): Promise<SessionState> {
+export async function syncPane($: EngineInterface, runtime: Runtime): Promise<SessionState> {
   const session = await syncSession($, runtime.options)
   const url = sessionUrl(session)
   const isOtherInstallation = url !== '' && url !== runtime.routeUrl
@@ -99,7 +97,7 @@ export async function syncPane($: Engine, runtime: Runtime): Promise<SessionStat
   return session
 }
 
-export function createActions($: Engine, runtime: Runtime): PaneActions {
+export function createActions($: EngineInterface, runtime: Runtime): PaneActions {
   async function move(change: (route: Route) => Route): Promise<void> {
     let before: Route | null = null
     const route = await updateRoute($, current => {

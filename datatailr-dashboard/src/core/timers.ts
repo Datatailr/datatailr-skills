@@ -8,19 +8,19 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { Engine } from './engine'
+import type { EngineInterface } from 'claude-code'
 
 // Only `src/core` calls `$.clock`. Function declarations, so that `claude plugin validate` follows `$` into them.
 
-export function after($: Engine, ms: number, fn: () => void): { cancel(): void } {
+export function after($: EngineInterface, ms: number, fn: () => void): { cancel(): void } {
   return $.clock.after(ms, fn)
 }
 
-export function clockNow($: Engine): Promise<number> {
+export function clockNow($: EngineInterface): Promise<number> {
   return $.clock.now()
 }
 
-export function abortAfter($: Engine, ms: number): AbortSignal {
+export function abortAfter($: EngineInterface, ms: number): AbortSignal {
   const controller = new AbortController()
   $.clock.after(ms, () => controller.abort())
 

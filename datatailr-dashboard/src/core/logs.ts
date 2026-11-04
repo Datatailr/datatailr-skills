@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: MIT
  *************************************************************************/
 
-import type { Engine } from './engine'
+import type { EngineInterface } from 'claude-code'
 
 import { ApiError } from './api'
 import type { Endpoints } from './endpoints'
@@ -45,7 +45,7 @@ export type LogReader = {
   cancel(): void
 }
 
-export function createLogReader($: Engine, endpoints: Endpoints): LogReader {
+export function createLogReader($: EngineInterface, endpoints: Endpoints): LogReader {
   let timer: { cancel(): void } | null = null
   let isTicking = false
   let latest = 0
