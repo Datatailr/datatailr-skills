@@ -1,0 +1,16 @@
+{
+  "description": "At session start, installs the datatailr SDK once into the plugin data folder, puts it on the PATH and reports the login state",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/setup.sh\"",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}

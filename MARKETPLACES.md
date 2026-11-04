@@ -1,10 +1,10 @@
 # Publish Datatailr skills
 
-For the skills plugin, use a tested release tag containing this packaging and
-matching the SDK, with the same version in both skills manifests. Include the
-entire repository contents, because the skills share references. The skills
-plugin needs no MCP server or automatic setup hook. The dashboard plugin tracks
-`main` and holds a hooks module.
+For the skills plugin, include the entire repository contents, because the
+skills share references. Its Claude directory submission tracks `main`, where
+the nightly sync keeps the SDK version of the skills in both skills manifests.
+The skills plugin holds a session hook that installs the SDK, and the dashboard
+plugin holds a hooks module. Both plugins track `main`.
 
 ## Before submitting
 
@@ -25,8 +25,10 @@ The repository holds two plugins. Each plugin is one submission in the portal.
 1. Open [the developer portal](https://claude.ai/directory/manage) with the
    intended publisher organization and GitHub write access.
 2. Submit the skills plugin. Choose **Submit new → Plugin bundle**, enter
-   `Datatailr/datatailr-skills`, leave the plugin path empty, and select the
-   tested release tag. To release the next version, change the tracked tag.
+   `Datatailr/datatailr-skills`, leave the plugin path empty, and track the
+   branch `main`. The nightly sync writes the SDK version of the skills into
+   the manifests, so a new SDK release reaches `main` with the next sync. That
+   is the release step.
 3. Submit the dashboard plugin. Choose **Submit new → Plugin bundle**, enter
    `Datatailr/datatailr-skills`, set the plugin path to `datatailr-dashboard`,
    and track the branch `main`. A new `version` in Sonic's dashboard
@@ -36,19 +38,22 @@ The repository holds two plugins. Each plugin is one submission in the portal.
    listing and data-handling fields, submit for review, then follow the
    portal's publication steps.
 
-The dashboard holds a hooks module, which is code. The portal applies its own
-rules to code, a safety scan and a policy review. For the data-handling
-questions, answer for each plugin.
+Both plugins hold code: the skills plugin a session hook, the dashboard a hooks
+module. The portal applies its own rules to code, a safety scan and a policy
+review. For the data-handling questions, answer for each plugin.
 
-- **Skills plugin.** Its connect skill downloads the `datatailr` SDK from PyPI.
-  Code that the user deploys can reach other services, as the "Data handling"
-  section of [README.md](README.md) says. It declares no connector.
+- **Skills plugin.** Its session hook downloads the `datatailr` SDK from PyPI
+  into the plugin's data folder on the first session. The connect skill does
+  the same in a project venv where no hook ran. Code that the user deploys can
+  reach other services, as the "Data handling" section of
+  [README.md](README.md) says. It declares no connector.
 - **Dashboard.** It sends platform requests only to the user's own Datatailr
   installation, through the `datatailr` CLI session. Two features pass data to
   Claude. "Explain" sends the facts of a run or a job, its error and the last
-  60 lines of its log to the `haiku` model, and only when the user presses it.
-  The pane context adds a short block about what the pane shows, with no log
-  line, to the next message the user types while the pane is shown. The plugin
+  60 lines of its log to the `haiku` model. It does so only when the user
+  presses it. The pane context adds a short block about what the pane shows
+  to the next message the user types while the pane is shown. The block holds
+  no log line. The plugin
   removes common secret patterns from both first, and `shareContext: false`
   turns the context off. It declares no connector.
 
