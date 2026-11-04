@@ -114,6 +114,8 @@ function engineOf($: EngineInterface): Engine {
     env: {
       get: name => {
         switch (name) {
+          case 'CLAUDE_CONFIG_DIR':
+            return $.env.get('CLAUDE_CONFIG_DIR')
           case 'HOME':
             return $.env.get('HOME')
           case 'OS':

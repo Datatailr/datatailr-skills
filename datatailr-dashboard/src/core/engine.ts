@@ -14,7 +14,7 @@ import type { EngineInterface, PluginState, StateRead, StateSetOptions, StateSet
 // `$.noun.method(...)` call per method, because the plugin directory reads `$` only in that file and
 // refuses `$` passed to a function of another file. The tests pass their fake engine as it is.
 // The variables the modules read. A new one needs a case in `engineOf` of the hooks module.
-export type EnvName = 'HOME' | 'OS' | 'PATH' | 'USERPROFILE'
+export type EnvName = 'CLAUDE_CONFIG_DIR' | 'HOME' | 'OS' | 'PATH' | 'USERPROFILE'
 
 // The keys of the plugin's state. A new one needs a case in `engineOf` of the hooks module too.
 export type StateKey =

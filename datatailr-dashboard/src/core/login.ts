@@ -26,6 +26,8 @@ export type LoginOutcome = { ok: true } | LoginFailure
 export const MFA_MARKER = 'Not authenticated or session expired'
 
 const CLI_NAME = 'datatailr'
+// The data folder of the `datatailr-skills` plugin from the `datatailr` marketplace: `<plugin>-<marketplace>`.
+const SKILLS_PLUGIN_DATA = 'datatailr-skills-datatailr'
 const MARKER_LINE = 'Open this URL in your browser to log in:'
 const PASSWORD_LOGIN_TIMEOUT_MS = 60_000
 const MAX_MESSAGE = 300
@@ -66,6 +68,20 @@ export async function findCli($: Engine, cliPath: string): Promise<string | null
     for (const name of names) {
       const path = `${folder.replace(trailing, '')}/${name}`
       if (await $.fs.exists(path)) return path
+    }
+  }
+  // The skills plugin installs the CLI at session start into its data folder, or under
+  // `~/.datatailr` where it has none. A pane without `cliPath` looks there last.
+  const configDir = ((await $.env.get('CLAUDE_CONFIG_DIR')) || '~/.claude').replace(trailing, '')
+  const layout = isWindows ? 'Scripts' : 'bin'
+  for (const folder of [`${configDir}/plugins/data/${SKILLS_PLUGIN_DATA}/venv/${layout}`, `~/.datatailr/venv/${layout}`]) {
+    for (const name of names) {
+      try {
+        const path = await resolveHome($, `${folder}/${name}`)
+        if (await $.fs.exists(path)) return path
+      } catch {
+        // No home folder: the `~` candidates do not exist.
+      }
     }
   }
   return null
