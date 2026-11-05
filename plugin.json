@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "datatailr-skills",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "Build & deploy with Datatailr",
   "author": {
     "name": "Datatailr",

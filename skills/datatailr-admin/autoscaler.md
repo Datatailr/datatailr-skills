@@ -141,5 +141,5 @@ dt settings get autoscaler --json
 - When total CPUs in an environment reach `max_cpus`, no new nodes are provisioned
 - Nodes with `--auto-terminate` use `minimum_idle_time` and `minimum_uptime` from this setting. Self-terminate retries start after a random delay and then double that delay so concurrent idle waves do not stampede the cloud API
 - If a node stops reporting, the scheduler marks it dead. After `zombie_timeout`, the controller leader force-terminates the cloud instance if it is still `running` or `draining`. This applies to manually created nodes as well as autoscaler-managed ones
-- Manual `dt node new` bypasses some scheduler logic but still respects quota
+- Manual `dt node new` and `dt node change-type` ignore `max_cpus` / `max_ram`, but are rejected if they would push a compute environment past the license vCPU or RAM limit. System nodes and the LOCAL provider are exempt. Downsizing is always allowed. Manual create still respects quota
 - Use `Node.ls()` or `dt node ls --json` alongside autoscaler settings to diagnose capacity issues
