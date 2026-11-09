@@ -7,7 +7,7 @@ description: Monitor and troubleshoot Datatailr jobs using the CLI. Check job st
 
 All observability commands use the `dt` CLI. Always add `--json` when you need to parse the output programmatically. Human-readable (table) output is the default.
 
-For programmatic access from Python (fetching workflow runs, per-task logs, and cached task results via the SDK), see [fetch-logs-and-results.md](fetch-logs-and-results.md).
+For programmatic access from Python (fetching workflow runs, per-task logs, and cached task results via the SDK), see [fetch-logs-and-results.md](fetch-logs-and-results.md). For admin **who did what** (`dt log audit`) and platform-wide events (`dt log events --all`), see [datatailr-admin/audit.md](../datatailr-admin/audit.md).
 
 ## Safety: confirm before mutating
 
@@ -15,7 +15,7 @@ Commands are split into **read-only** and **mutating**. Always confirm with the 
 
 | Category | Commands | Confirmation required? |
 |---|---|---|
-| Read-only | `job ls`, `job get`, `job runs`, `job versions`, `log read` | No |
+| Read-only | `job ls`, `job get`, `job runs`, `job versions`, `log read`, `log events` | No |
 | Mutating | `job stop`, `job start`, `job rm`, `job restore`, `job promote` | **Yes -- always ask the user first** |
 
 When the user asks to stop, remove, or promote a job, state exactly what you are about to do (job name, environment, version) and wait for explicit approval before running the command. This is especially important for `job rm` and `job promote -e prod`.
@@ -114,6 +114,7 @@ dt log read my_job -r                  # read stderr instead
 dt log read my_job -e prod             # specific environment
 dt log read my_job -i 42               # specific run ID
 dt log read my_job -c 3                # child job #3 (for workflows)
+dt log events my_job                   # platform timeline: queued, blocked, started
 ```
 
 ## Job states
@@ -168,6 +169,7 @@ When a user reports a job issue, follow this sequence:
 1. **Check status**: `dt job get <name> --json` -- look at `state` and `exit_code`.
 2. **Check build logs** (if state is `building` or `failed` right after deploy): `dt job get <name> -b stderr`.
 3. **Read runtime logs**: `dt log read <name> -l 50` for stdout, add `-r` for stderr.
-4. **Check run history**: `dt job runs -f "name = <name>" --json` to see if it has been failing repeatedly.
-5. **Check OOM**: if state is `out_of_memory`, the job needs more memory in its `Resources`.
-6. **Follow live**: `dt log read <name> -f` to watch output in real time.
+4. **Read platform timeline**: `dt log events <name> --json` to see whether the scheduler queued, placed, or blocked the run.
+5. **Check run history**: `dt job runs -f "name = <name>" --json` to see if it has been failing repeatedly.
+6. **Check OOM**: if state is `out_of_memory`, the job needs more memory in its `Resources`.
+7. **Follow live**: `dt log read <name> -f` to watch output in real time.
