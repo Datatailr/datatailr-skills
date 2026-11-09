@@ -42,7 +42,7 @@ Before writing code, determine which components you need to build and how they s
 | Excel Add-ins | A set of Excel worksheet functions that are deployed as a containerized job. | [datatailr-deploy-excel-addin](../datatailr-deploy-excel-addin/SKILL.md) |
 | Distributed scikit-learn / joblib | Run joblib-parallel workloads (grid search, cross-validation) on an automatically managed pool of worker containers. | [datatailr-distributed-joblib](../datatailr-distributed-joblib/SKILL.md) |
 | Compute Nodes | List, inspect, drain, tag, create, resize and terminate the machines that run jobs, with the `Node` class or `dt node`. | [datatailr-nodes](../datatailr-nodes/SKILL.md) |
-| Admin & Cluster Settings | Manage autoscaler capacity, platform settings, login, ACLs and budgets via `dt settings` and `Budget`. | [datatailr-admin](../datatailr-admin/SKILL.md) |
+| Admin & Cluster Settings | Manage autoscaler capacity, platform settings, login, ACLs, budgets and audit logs via `dt settings`, `Budget` and `dt log audit`. | [datatailr-admin](../datatailr-admin/SKILL.md) |
 
 To change an app, a service or an Excel add-in that is already deployed, read [datatailr-modify-job](../datatailr-modify-job/SKILL.md). Do not rewrite deployed code from scratch. To change a deployed workflow, edit its source project and deploy it again.
 
@@ -73,7 +73,8 @@ log.critical("This is a critical message")
 ```
 
 These logs will be visible in the Datatailr UI under the "stdout" and "stderr" tabs of the job's logs, as well as using the `Job.logs()` method and `dt log read` CLI command.
-More about observability and logging can be found in [datatailr-job-observability](../datatailr-job-observability/SKILL.md). To roll a job back to a previous version, see [datatailr-job-rollback](../datatailr-job-rollback/SKILL.md).
+More about job logs and platform timelines: [datatailr-job-observability](../datatailr-job-observability/SKILL.md). To roll a job back to a previous version, see [datatailr-job-rollback](../datatailr-job-rollback/SKILL.md).
+Who did what (admin audit search): [datatailr-admin/audit.md](../datatailr-admin/audit.md).
 
 ## Reporting a deploy
 
