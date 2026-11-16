@@ -103,6 +103,10 @@ def daily_workflow():
 - Without minute helpers, the schedule runs at minute 0. Without minute and hour helpers, it runs at 00:00: `Schedule(weekdays=["Sun"])` runs at 00:00 every Sunday.
 - `timezone` (IANA name, e.g. `"Europe/London"`) is stored with the workflow and sets the run date (`rundate`). The scheduler computes the run times in UTC, so give UTC hours.
 
+To run a workflow once for a given run date (for example a backfill), pass `run_date` when calling it: `daily_workflow(run_date="2026-01-31")`. It takes a `datetime.date` or a `YYYY-MM-DD` string and sets the `rundate` task argument of that run only. With `run_date`, a workflow that has a schedule runs once now and is not scheduled. `Workflow.run()` and `Workflow.start()` take the same argument.
+
+The run date has one limit. If the call saves a version that needs a new image, the run starts after the image build and uses the current date, not `run_date`. For a workflow with changed code, deploy first, wait until the build ends, and then run `dt job start --now --run-date 2026-01-31 <workflow_name>`.
+
 ## Build environment and native dependencies
 
 Datatailr jobs run in **Linux (Debian) containers**. The user's local OS (macOS, Windows, etc.) is **irrelevant** to the build.

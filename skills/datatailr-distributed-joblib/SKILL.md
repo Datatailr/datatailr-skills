@@ -46,7 +46,8 @@ with joblib.parallel_backend(
     "datatailr",
     n_jobs=16,
     worker_memory="4g",     # memory per worker container (default "2g")
-    worker_cpu=2,           # CPU cores per worker container (default 1)
+    worker_cpu=2,           # CPU cores per worker container (default 1);
+                            # a worker runs that many fits at a time
     environment="dev",      # Datatailr environment
     embed_modules=("my_helpers",),  # local modules shipped by value
 ):
@@ -87,6 +88,11 @@ with joblib.parallel_backend(
   another worker up to 3 times, then fails with a descriptive error. Increase
   `worker_memory` for memory-hungry workloads.
 - Nested parallelism inside a task runs sequentially (same as Ray's backend).
+  Set `worker_cpu` for parallelism inside a worker: a worker with 4 cores
+  runs 4 fits at once, so the pool runs `n_jobs * worker_cpu` fits in
+  parallel. For a given total core count, prefer fewer workers with more
+  cores when the training data is a large numpy array: each worker
+  downloads and holds it once, whatever its core count.
 - Pool startup (broker + workers) takes tens of seconds per `Parallel` call.
   After the pool is warm, short fits can still be slower than local `loky`
   because each batch crosses HTTP — the backend wins when individual fits
