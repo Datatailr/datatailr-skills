@@ -11,7 +11,7 @@ Related skills:
 
 - [datatailr-admin](../datatailr-admin/SKILL.md) for the autoscaler and the other platform settings
 - [datatailr-job-observability](../datatailr-job-observability/SKILL.md) for job status and logs
-- [datatailr-sorting-and-filtering-dsl.md](../datatailr-sorting-and-filtering-dsl.md) for the filter grammar
+- [sorting-and-filtering-dsl.md](../datatailr/references/sorting-and-filtering-dsl.md) for the filter grammar
 
 ## Safety tiers
 
