@@ -108,4 +108,4 @@ Do not routinely check component versions. Investigate compatibility only when a
 ## Filtering, Sorting and Pagination
 Many list-style `dt` commands support filtering, sorting, and pagination. The filter/sort expression strings are the same across commands that support these options.
 
-See [datatailr-sorting-and-filtering-dsl.md](../datatailr-sorting-and-filtering-dsl.md) for the full filter grammar.
+See [sorting-and-filtering-dsl.md](references/sorting-and-filtering-dsl.md) for the full filter grammar.

@@ -11,7 +11,7 @@ A Datatailr service is a long-running background process (API server, message co
 
 ## Project layout
 
-See [datatailr-project-layout.md](../datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
+See [project-layout.md](../datatailr/references/project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
 
 ## Service code
 
@@ -75,7 +75,7 @@ Key parameters:
 - `build_script_pre` / `build_script_post`: shell commands for the Docker image build. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md) for formatting. If the script must operate on the installed package, it is at `/opt/datatailr/usr/lib/python/site-packages/<package_name>` where `<package_name>` is the name of the directory that is deployed (e.g. `my_service`).
 - `build_secret_keys`: list of build secret keys whose values the build scripts need (e.g. registry tokens), exposed as `DT_BUILD_SECRET_<key>`. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md#build-secrets-credentials-in-build-scripts).
 - `env_vars`: dict of environment variables passed to the running container.
-- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](../datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
+- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [acl.md](../datatailr/references/acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
 
 ## Build environment and native dependencies
 
@@ -92,7 +92,7 @@ When you (the agent) run the deploy script yourself, you may get `RuntimeError: 
 
 Once deployed, the service is reachable from any other Datatailr job (app, workflow, add-in, or another service) at `http://<normalized-name>`. The name is derived from the `name` parameter: lowercased, non-alphanumeric characters replaced with hyphens (e.g., `"My Service"` becomes `http://my-service`).
 
-For full details on constructing URLs, authentication patterns, and naming conventions, see [datatailr-service-communication.md](../datatailr-service-communication.md).
+For full details on constructing URLs, authentication patterns, and naming conventions, see [service-communication.md](../datatailr/references/service-communication.md).
 
 ## Checklist
 

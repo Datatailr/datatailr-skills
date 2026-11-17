@@ -171,4 +171,4 @@ acl = ACL({
 })
 ```
 
-See [datatailr-acl.md](../datatailr-acl.md) for full ACL documentation.
+See [acl.md](../datatailr/references/acl.md) for full ACL documentation.
