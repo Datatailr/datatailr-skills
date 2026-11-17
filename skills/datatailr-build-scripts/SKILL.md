@@ -76,6 +76,10 @@ build_script_pre=(
 - Values exist only during the build: they are not in the image and not available at runtime (use `Secrets` for runtime credentials, see [datatailr-kv-and-secrets](../datatailr-kv-and-secrets/SKILL.md)).
 - The build fails if a listed secret is missing or the job's `run_as` user can't read it.
 
+## Certificate errors behind a TLS-inspecting proxy
+
+If downloads in the build fail with certificate errors (for example `self-signed certificate in certificate chain` or `unable to get local issuer certificate`), the network probably inspects TLS traffic. Do not add the CA in `build_script_pre`: steps before it already download over HTTPS. Ask the platform admin to add the company root CA to the cluster with `dt settings put extra_ca_bundle file:///path/to/company-root-ca.pem`. Every image built after that trusts the CA, in the build and at runtime. A job whose definition did not change does not build again, so change the job and deploy it again.
+
 ## Package path in the container image
 
 The job bundle is **extracted** (not pip-installed) into `/opt/datatailr/usr/lib/python/site-packages/<package_name>/`, where **`<package_name>` is the name of the directory that is deployed** (the entrypoint package directory, e.g. `my_app`). That path is on `PYTHONPATH`, so inside the running container the package is importable by its directory name — use normal imports like `from my_app.file import function_name`.
