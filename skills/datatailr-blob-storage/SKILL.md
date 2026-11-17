@@ -73,7 +73,7 @@ current_acl = blob.acls("my_bucket/shared.csv")
 blob.set_acls("my_bucket/shared.csv", new_acl)
 ```
 
-Only set ACLs if the user explicitly requests access restrictions. See [datatailr-acl.md](../datatailr-acl.md) for details on the `ACL` class.
+Only set ACLs if the user explicitly requests access restrictions. See [acl.md](../datatailr/references/acl.md) for details on the `ACL` class.
 
 ## CLI
 

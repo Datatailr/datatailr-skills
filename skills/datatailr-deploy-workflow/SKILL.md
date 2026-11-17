@@ -11,7 +11,7 @@ A Datatailr workflow is a DAG (directed acyclic graph) of tasks. Tasks are Pytho
 
 ## Project layout
 
-See [datatailr-project-layout.md](../datatailr-project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
+See [project-layout.md](../datatailr/references/project-layout.md) for packaging rules (deploy script outside the package, only the package directory is sent, gitignore / skip dirs).
 
 ## Task functions
 
@@ -75,7 +75,7 @@ Key rules:
 - `schedule`: a `Schedule` for recurring execution (see below).
 - `env_vars`: dict of environment variables passed to every task container.
 - `python_version`: Python version for containers (default `"auto"`).
-- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [datatailr-acl.md](../datatailr-acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
+- `run_as` / `acl`: leave unset to use default permissions. Only if the user explicitly requests access restrictions, see [acl.md](../datatailr/references/acl.md). If their request is vague (e.g., "restrict access"), ask who should be able to see, edit, and operate the job before proceeding.
 - `fail_after`: max duration before marked failed (e.g., `"2h"` or `timedelta(hours=2)`).
 - `expire_after`: duration after which completed workflow resources are cleaned up.
 - `build_script_pre` / `build_script_post`: shell commands for the Docker image build. See [datatailr-build-scripts](../datatailr-build-scripts/SKILL.md) for formatting. If the script must operate on the installed package, it is at `/opt/datatailr/usr/lib/python/site-packages/<package_name>` where `<package_name>` is the name of the directory that is deployed.
@@ -146,7 +146,7 @@ If the user has existing Python functions and wants to turn them into a Datatail
 Each task runs in its own container. If a task reads from KV or Secrets:
 
 - `KV().get()` **raises** if the key does not exist. Ensure keys are created before the workflow runs (ask the user to create it in the UI if required). Alternatively, wrap in try/except with a default.
-- `KV().get()` may return a string or an already-parsed object. Always handle both (see the [kv-and-secrets skill](../kv-and-secrets/SKILL.md) for the pattern).
+- `KV().get()` may return a string or an already-parsed object. Always handle both (see the [kv-and-secrets skill](../datatailr-kv-and-secrets/SKILL.md) for the pattern).
 
 ## Checklist
 

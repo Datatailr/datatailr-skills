@@ -72,9 +72,22 @@ build_script_pre=(
 ```
 
 - Each key is exposed to both build scripts as `DT_BUILD_SECRET_<key>`, with `/`, `.` and `-` replaced by `_`.
+- A line of `python_requirements` can use the variable too, but only with the whole name in upper case, `${DT_BUILD_SECRET_<KEY>}`, and only as the user or the password of a URL. The build fails otherwise. For a package from a private index, list it in `python_requirements`, not in a build script:
+
+  ```python
+  build_secret_keys=["index-token"],
+  python_requirements=[
+      "--extra-index-url https://user:${DT_BUILD_SECRET_INDEX_TOKEN}@pypi.example.com/simple",
+      "private-package==1.2.0",
+  ],
+  ```
 - Use the variable directly in commands. Never write it to a file (e.g. `npm config set`, `.netrc`, `pip.conf`), or it ends up in the image layer.
 - Values exist only during the build: they are not in the image and not available at runtime (use `Secrets` for runtime credentials, see [datatailr-kv-and-secrets](../datatailr-kv-and-secrets/SKILL.md)).
 - The build fails if a listed secret is missing or the job's `run_as` user can't read it.
+
+## Certificate errors behind a TLS-inspecting proxy
+
+If downloads in the build fail with certificate errors (for example `self-signed certificate in certificate chain` or `unable to get local issuer certificate`), the network probably inspects TLS traffic. Do not add the CA in `build_script_pre`: steps before it already download over HTTPS. Ask the platform admin to add the company root CA to the cluster with `dt settings put extra_ca_bundle file:///path/to/company-root-ca.pem`. Every image built after that trusts the CA, in the build and at runtime. A job whose definition did not change does not build again, so change the job and deploy it again.
 
 ## Package path in the container image
 
