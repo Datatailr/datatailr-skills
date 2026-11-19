@@ -86,13 +86,22 @@ dashboard files. Updates require a new ZIP.
 [Submission guide](https://developers.openai.com/plugins/deploy/submission) ·
 [Desktop requirements](https://developers.openai.com/plugins/deploy/desktop-only).
 
+The repository also has its own catalog, `.agents/plugins/marketplace.json`,
+which lists the skills plugin only. Add it with
+`codex plugin marketplace add Datatailr/datatailr-skills`, then install from
+its source in the Plugins Directory of the ChatGPT desktop app. It follows
+`main` and needs no review.
+[Catalog format](https://developers.openai.com/codex/plugins/build).
+
 ## Cursor
 
 Submit the public repository at [Cursor Marketplace](https://cursor.com/marketplace/publish)
-after testing the local plugin. Cursor reads the Agent Plugins manifest in
-`datatailr-skills/`. Check that the form accepts a plugin in a subfolder; this
-repo has no Cursor-specific manifest or marketplace catalog.
-Cursor reads only `skills/`, so it does not get the connect skill.
+after testing the local plugin. The repository holds several plugins, so
+Cursor reads the catalog `.cursor-plugin/marketplace.json` at the root. It
+lists the skills plugin only, and Cursor loads `datatailr-skills/plugin.json`
+as an Agent Plugin. Cursor reads only `skills/`, so it does not get the
+connect skill. A Teams or Enterprise admin can also import the repository as
+a team marketplace under **Dashboard → Settings → Plugins**.
 Initial listings and updates are reviewed.
 [Requirements](https://cursor.com/docs/reference/plugins).
 

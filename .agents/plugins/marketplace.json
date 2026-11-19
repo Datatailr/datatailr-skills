@@ -1,0 +1,20 @@
+{
+  "name": "datatailr",
+  "interface": {
+    "displayName": "Datatailr"
+  },
+  "plugins": [
+    {
+      "name": "datatailr-skills",
+      "source": {
+        "source": "local",
+        "path": "./datatailr-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
