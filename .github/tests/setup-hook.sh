@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Usage: bash .github/tests/setup-hook.sh
-# Runs hooks/setup.sh against a fake home folder, a fake plugin data folder and
+# Runs datatailr-skills/hooks/setup.sh against a fake home folder, a fake plugin data folder and
 # a stub python3 that creates a fake venv, and checks what the hook does.
 set -euo pipefail
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
-hook=$root/hooks/setup.sh
+hook=$root/datatailr-skills/hooks/setup.sh
 real_python=$(command -v python3)
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
