@@ -28,6 +28,7 @@
         "websiteURL": "https://www.datatailr.com/",
         "supportURL": "https://datatailr.com/contact",
         "privacyPolicyURL": "https://datatailr.com/privacy-policy",
+        "termsOfServiceURL": "https://datatailr.com/terms-of-use",
         "logo": "./.claude-plugin/icon.png",
         "composerIcon": "./.claude-plugin/icon.png",
         "defaultPrompt": [

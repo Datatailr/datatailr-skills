@@ -12,6 +12,9 @@
   },
   "homepage": "https://www.datatailr.com/",
   "privacyPolicyUrl": "https://datatailr.com/privacy-policy",
+  "termsOfServiceUrl": "https://datatailr.com/terms-of-use",
+  "supportUrl": "https://datatailr.com/contact",
+  "documentationUrl": "https://ai.docs.datatailr.com/latest/",
   "repository": "https://github.com/Datatailr/datatailr-skills",
   "license": "MIT",
   "keywords": [

@@ -117,6 +117,7 @@ and download packages required by your workload. Keep credentials out of chat
 and source files; configure authentication through the SDK/CLI yourself.
 
 [Privacy policy](https://datatailr.com/privacy-policy) ·
+[Terms of use](https://datatailr.com/terms-of-use) ·
 [Support](https://datatailr.com/contact) ·
 [Datatailr documentation](https://ai.docs.datatailr.com/latest/)
 
