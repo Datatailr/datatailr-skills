@@ -1,6 +1,6 @@
 ---
 name: datatailr-connect
-description: Start here for any Datatailr task when you are not logged in or no dt command works yet. Logs in to the user's Datatailr installation with a browser approval (device login), with the datatailr SDK that the plugin's session hook installed, or installs the SDK in a project virtualenv when no hook ran. Then hands over to the other datatailr skills. Use it when the user mentions Datatailr and no dt command works yet, or asks to connect, log in, set up or get started with Datatailr. Do not use it for work inside an installation that is already connected.
+description: Start here for any Datatailr task when you are not logged in or no dt command works yet. Makes sure the datatailr SDK is available, and installs it in a project virtualenv when it is missing, then logs in to the user's Datatailr installation with a browser approval (device login). Then hands over to the other datatailr skills. Use it when the user mentions Datatailr and no dt command works yet, or asks to connect, log in, set up or get started with Datatailr. Do not use it for work inside an installation that is already connected.
 ---
 
 # Connect to Datatailr
@@ -13,13 +13,13 @@ All commands in this skill are bash commands. Claude Cowork runs them in its Lin
 
 ## 0. Find the SDK
 
-At the start of every session, the hook of this plugin installs the `datatailr` SDK once, into the plugin's data folder. It puts that folder on the `PATH` of every bash command. It also adds a line that starts with `Datatailr:` to the session context. That line names the folder and says whether a CLI login is saved. Check that the SDK is on the `PATH`:
+Check whether the `datatailr` SDK and its `dt` CLI are already on the `PATH`:
 
 ```bash
 command -v datatailr dt
 ```
 
-If it prints two paths, the SDK is ready: skip step 2, and run `datatailr`, `dt` and `python` by name in every later command. If it prints nothing but the context names a folder, the shell did not load the session environment. Then put the folder at the start of `PATH` in each command, for example `PATH="<folder>:$PATH" dt user ls`. If there is no such line in the context, or it says that the install failed, do step 2.
+If it prints two paths, the SDK is ready: skip step 2, and run `datatailr`, `dt` and `python` by name in every later command. If it prints one path or none, do step 2.
 
 ## 1. Create an isolated project directory
 
@@ -109,11 +109,10 @@ The skills you hand over to run `dt` and `python`, and a deploy script starts `d
 PATH="$(pwd)/.venv/bin:$PATH" .venv/bin/python deploy.py
 ```
 
-If the `datatailr-dashboard` plugin is installed, it finds the SDK from step 0 on its own, and `/dt` opens the pane. With a project venv from step 2, give the user the absolute path `<project>/.venv/bin/datatailr` instead. Use the absolute path of the project directory from step 1. On Windows the path is `<project>\.venv\Scripts\datatailr.exe`, with the `.exe` suffix, because the plugin checks the exact path. Tell them to set it as the plugin's `cliPath` option with `claude plugin configure datatailr-dashboard`.
+If the `datatailr-dashboard` plugin is installed, it finds an SDK from step 0 on the `PATH` on its own, and `/dt` opens the pane. With a project venv from step 2, give the user the absolute path `<project>/.venv/bin/datatailr` instead. Use the absolute path of the project directory from step 1. On Windows the path is `<project>\.venv\Scripts\datatailr.exe`, with the `.exe` suffix, because the plugin checks the exact path. Tell them to set it as the plugin's `cliPath` option with `claude plugin configure datatailr-dashboard`.
 
 ## Troubleshooting
 
-- **`datatailr: command not found` although the context names a folder**: the shell did not load the session environment. Put the folder at the start of `PATH` in each command, as step 0 says.
 - **`setup-skills` fails with a permissions error**: make sure that you are inside the project subdirectory from step 1, not the workspace root.
 - **`login: error: unrecognized arguments: --device`**: the installed `datatailr` predates device login. Run `python -m pip install --upgrade datatailr` with the Python of the SDK. If that does not help, tell the user their package version does not support device login yet.
 - **"Datatailr base URL is required for device login"**: pass `--url` or set `DATATAILR_BASE_URL`.

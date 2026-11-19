@@ -30,9 +30,8 @@ permission to perform the requested operations.
 ## Instructions for the agent
 
 If you are not logged in, read
-[the connect skill](entry/datatailr-connect/SKILL.md) first. The session hook
-of this plugin installs the SDK and says in the session context whether a CLI
-login is saved.
+[the connect skill](entry/datatailr-connect/SKILL.md) first. It installs the
+SDK in a project venv when the SDK is missing, then logs in.
 
 Read [the Datatailr guide](skills/datatailr/SKILL.md), then the relevant
 `SKILL.md` under `skills/` for the requested operation. Follow its linked
