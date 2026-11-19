@@ -30,14 +30,14 @@ permission to perform the requested operations.
 ## Instructions for the agent
 
 If you are not logged in, read
-[the connect skill](entry/datatailr-connect/SKILL.md) first. It installs the
+[the connect skill](datatailr-skills/entry/datatailr-connect/SKILL.md) first. It installs the
 SDK in a project venv when the SDK is missing, then logs in.
 
-Read [the Datatailr guide](skills/datatailr/SKILL.md), then the relevant
-`SKILL.md` under `skills/` for the requested operation. Follow its linked
+Read [the Datatailr guide](datatailr-skills/skills/datatailr/SKILL.md), then the relevant
+`SKILL.md` under `datatailr-skills/skills/` for the requested operation. Follow its linked
 references as needed; resolve each link relative to the file containing it.
 For user and group management, read
-[users and groups](skills/datatailr-users-and-groups/SKILL.md).
+[users and groups](datatailr-skills/skills/datatailr-users-and-groups/SKILL.md).
 
 Use the user's configured SDK, CLI and environment. Do not request passwords
 or tokens in chat. Ask before installing or upgrading software.

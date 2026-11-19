@@ -106,11 +106,15 @@ Initial listings and updates are reviewed.
 
 ## skills.sh
 
-Publish `datatailr-skills/SKILL.md` with the complete `datatailr-skills/skills/` tree. Verify discovery
-with `npx skills@1.7.2 add . --list` and test installation in a temporary project
-using `npx skills@1.7.2 add /path/to/datatailr-skills/datatailr-skills --agent codex`.
-The `SKILL.md` entry point installs the bundle intact; native plugins discover the
-individual skills under `skills/` instead.
+Publish the root `SKILL.md` with the complete `datatailr-skills/` tree. The
+skills CLI stops at a root `SKILL.md`, so it lists the one `datatailr-skills`
+bundle and not each nested skill. Without it, the CLI offers every nested
+skill on its own, and those break when installed alone. Verify discovery with
+`npx skills@1.7.2 add . --list`, which must find 1 skill, and test installation
+in a temporary project using `npx skills@1.7.2 add /path/to/datatailr-skills --agent codex`.
+Native plugins discover the individual skills under `datatailr-skills/skills/`
+instead. The Claude directory submission reads only `datatailr-skills/`, so
+the root `SKILL.md` is not part of it.
 
 There is no directory submission form: public repository installs are counted
 by the skills CLI's telemetry and drive listing discovery. Do not assume that

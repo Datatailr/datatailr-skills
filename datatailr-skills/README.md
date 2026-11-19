@@ -83,12 +83,14 @@ With Node.js and npm installed:
 npx skills@1.7.2 add Datatailr/datatailr-skills
 ```
 
-Select your agent and install the `datatailr-skills` bundle. The bundle's `SKILL.md`
-keeps all shared references in the installed folder. Do not select individual
+Select your agent and install the `datatailr-skills` bundle. Its `SKILL.md`
+is at the repository root, so the bundle installs the whole repository folder
+and keeps all shared references in it. Only the `datatailr-skills/` folder
+holds skills; the other folders are unused there. Do not select individual
 nested skills or use `--full-depth`: they depend on sibling files. The skill
 `entry/datatailr-connect` must not be installed alone, because its links point
 at sibling skills. To install a checked-out release instead, run
-`npx skills@1.7.2 add /path/to/datatailr-skills/datatailr-skills`. The repository command
+`npx skills@1.7.2 add /path/to/datatailr-skills`. The repository command
 follows development `main`.
 
 ## Usage
@@ -128,7 +130,7 @@ The daily sync copies that tree here at 00:00 CET (23:00 UTC, fixed UTC+1).
 It also copies Sonic's `claude-plugins/datatailr-dashboard/` into
 `datatailr-dashboard/`. Direct edits under `datatailr-skills/skills/` or
 `datatailr-dashboard/` are overwritten. The connect skill under
-`datatailr-skills/entry/` is edited here, and the sync does not touch it. The skill entry point `SKILL.md`, repository docs, icons and
+`datatailr-skills/entry/` is edited here, and the sync does not touch it. The skills.sh entry point `SKILL.md` at the repository root, repository docs, icons and
 manifests are preserved. OpenAI and Cursor share `datatailr-skills/plugin.json`.
 Claude reads `datatailr-skills/.claude-plugin/plugin.json`. Provider-specific OpenAI settings
 stay under `extensions.com.openai`.
