@@ -16,8 +16,9 @@ hooks module. Both plugins track `main`.
   on the dashboard folder. Both must pass without warnings.
 - Validate `datatailr-skills/plugin.json` against its declared Agent Plugins schema.
 - Confirm the privacy policy covers the submitted functionality and retention.
-  A public Terms of Service URL has not been supplied; add it to the relevant
-  listing metadata if required. Do not use the privacy policy as a substitute.
+  The terms of use are at https://datatailr.com/terms-of-use. Both skills
+  manifests carry the link: `termsOfServiceUrl` for Claude and
+  `termsOfServiceURL` under `extensions.com.openai.interface` for OpenAI.
 
 ## Claude
 
