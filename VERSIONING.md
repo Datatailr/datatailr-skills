@@ -17,8 +17,9 @@ which is the version Sonic's `main` declares. A release tag holds the same
 version with the skills of that release commit. If no matching tag exists, use
 the skills bundled with your SDK.
 Older tags retain their original packaging. The Claude catalog and skills.sh
-bundle require a tag containing `.claude-plugin/marketplace.json` and the root
-`SKILL.md`; do not move an old tag to add them.
+bundle require a tag containing `.claude-plugin/marketplace.json` and the
+bundle's `SKILL.md`; do not move an old tag to add them. Tags made before the
+move to `datatailr-skills/` hold the skills plugin at the repository root.
 
 The SDK still bundles skills, and `datatailr setup-skills` copies those files.
 Selecting marketplace releases through that command and removing bundled

@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "datatailr-skills",
-      "source": "./"
+      "source": "./datatailr-skills"
     },
     {
       "name": "datatailr-dashboard",
