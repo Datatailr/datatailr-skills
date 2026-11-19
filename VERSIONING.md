@@ -27,8 +27,8 @@ skills are separate work. Platform–SDK compatibility is handled separately.
 
 The Claude directory submission of the skills plugin tracks `main`. A new SDK
 release reaches it with the next sync, which writes the new version, and the
-directory reviews the new version. A change to the connect skill or the session
-hook, which live only here, reaches it the same way. See
+directory reviews the new version. A change to the connect skill, which lives only
+here, reaches it the same way. See
 [Claude's update guide](https://claude.com/docs/plugins/submit#change-the-tracked-branch-or-tag).
 
 The `datatailr-dashboard` plugin keeps its own version. Sonic sets it in the

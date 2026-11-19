@@ -10,8 +10,8 @@ Connect to your Datatailr installation with a browser login, then work in it.
 
 - An existing Datatailr environment and permission to use it.
 - A compatible Datatailr Python SDK and configured, authenticated `dt` CLI.
-  In Claude Code and Claude Cowork, the plugin's session hook installs the SDK
-  with your Python 3, and the connect skill logs in.
+  In Claude Code and Claude Cowork, the connect skill installs the SDK in a
+  project venv with your Python 3 when it is missing, and logs in.
 - An agent that can run local commands and reach your environment.
 
 ## Install or try locally
@@ -52,13 +52,12 @@ The pane shows runs, jobs, nodes, users, keys, costs and files of the connected
 installation live, in the Claude desktop app and in the terminal, and it needs
 Claude Code 2.1.299 or later.
 
-At the start of each session, the hook of the skills plugin installs the
-`datatailr` SDK once, into the plugin's data folder
-`~/.claude/plugins/data/datatailr-skills-datatailr/venv`. It puts that folder
-on the `PATH` of the commands Claude runs. It needs Python 3 on your machine. Then ask
-Claude to connect to Datatailr. The `datatailr-connect` skill logs you in with
-a browser approval. The dashboard finds that SDK on its own, and `/dt` opens
-the pane.
+Then ask Claude to connect to Datatailr. If the `datatailr` SDK is not on
+your `PATH`, the `datatailr-connect` skill installs it in a `.venv` of the
+project folder, which needs Python 3 on your machine. It then logs you in with
+a browser approval. The dashboard finds an SDK on the `PATH` on its own, and
+`/dt` opens the pane. For an SDK in a project `.venv`, set the dashboard's
+`cliPath` option to its `datatailr` program, as the connect skill says.
 
 ### OpenAI / Codex
 
@@ -104,9 +103,9 @@ Example prompts:
 
 ## Data handling
 
-The session hook of the plugin downloads the `datatailr` package from PyPI into
-the plugin's data folder on the first session, and runs nothing else. Skills
-guide your agent to run Python and `dt` commands using your configured
+The plugin holds instructions only and runs no code of its own. When the SDK
+is missing, the connect skill guides your agent to download the `datatailr`
+package from PyPI into a project venv. Skills guide your agent to run Python and `dt` commands using your configured
 Datatailr credentials. Requests go to your Datatailr environment independently
 of any connectors declared in the AI platform. Depending on your task, they
 can read or store names, emails, files, code, configuration and job data.
@@ -128,9 +127,7 @@ The daily sync copies that tree here at 00:00 CET (23:00 UTC, fixed UTC+1).
 It also copies Sonic's `claude-plugins/datatailr-dashboard/` into
 `datatailr-dashboard/`. Direct edits under `datatailr-skills/skills/` or
 `datatailr-dashboard/` are overwritten. The connect skill under
-`datatailr-skills/entry/` and the session hook under `datatailr-skills/hooks/`
-are edited here, and the sync does not touch them. Run
-`bash .github/tests/setup-hook.sh` after a change to the hook. The skill entry point `SKILL.md`, repository docs, icons and
+`datatailr-skills/entry/` is edited here, and the sync does not touch it. The skill entry point `SKILL.md`, repository docs, icons and
 manifests are preserved. OpenAI and Cursor share `datatailr-skills/plugin.json`.
 Claude reads `datatailr-skills/.claude-plugin/plugin.json`. Provider-specific OpenAI settings
 stay under `extensions.com.openai`.

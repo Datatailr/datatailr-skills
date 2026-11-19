@@ -4,8 +4,8 @@ The skills plugin is the `datatailr-skills/` folder, and the dashboard plugin
 is the `datatailr-dashboard/` folder. Keep the skills folder complete, because
 the skills share references. Its Claude directory submission tracks `main`, where
 the nightly sync keeps the SDK version of the skills in both skills manifests.
-The skills plugin holds a session hook that installs the SDK, and the dashboard
-plugin holds a hooks module. Both plugins track `main`.
+The skills plugin holds instructions only, and the dashboard plugin holds a
+hooks module. Both plugins track `main`.
 
 ## Before submitting
 
@@ -39,13 +39,11 @@ The repository holds two plugins. Each plugin is one submission in the portal.
    listing and data-handling fields, submit for review, then follow the
    portal's publication steps.
 
-Both plugins hold code: the skills plugin a session hook, the dashboard a hooks
-module. The portal applies its own rules to code, a safety scan and a policy
-review. For the data-handling questions, answer for each plugin.
+The dashboard holds code, a hooks module, and the skills plugin holds none.
+The portal applies its own rules to code, a safety scan and a policy review. For the data-handling questions, answer for each plugin.
 
-- **Skills plugin.** Its session hook downloads the `datatailr` SDK from PyPI
-  into the plugin's data folder on the first session. The connect skill does
-  the same in a project venv where no hook ran. Code that the user deploys can
+- **Skills plugin.** When the SDK is missing, the connect skill guides the
+  agent to download the `datatailr` SDK from PyPI into a project venv. Code that the user deploys can
   reach other services, as the "Data handling" section of
   [README.md](README.md) says. It declares no connector.
 - **Dashboard.** It sends platform requests only to the user's own Datatailr
