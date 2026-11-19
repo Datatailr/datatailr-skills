@@ -23,6 +23,7 @@ plugin only. The dashboard runs in Claude Code alone.
 | Claude Code | `.claude-plugin/marketplace.json` | `/plugin marketplace add Datatailr/datatailr-skills` |
 | Codex and the ChatGPT desktop app | `.agents/plugins/marketplace.json` | `codex plugin marketplace add Datatailr/datatailr-skills` |
 | Cursor | `.cursor-plugin/marketplace.json` | A Teams or Enterprise admin imports the repository under **Dashboard → Settings → Plugins** |
+| skills.sh | `SKILL.md` (the `datatailr-skills` bundle) | `npx skills add Datatailr/datatailr-skills` |
 
 Publishing steps are in
 [MARKETPLACES.md](MARKETPLACES.md), and release tags are explained in
